@@ -3,8 +3,8 @@ import pandas as pd
 
 TICKER = "^NSEI"
 START_DATE = "2005-01-01"
-END_DATE = "2025-01-01"
-OUTPUT_FILE = "cleaned.csv"
+END_DATE = "2026-01-01"
+OUTPUT_FILE = "data/cleaned.csv"
 
 data = yf.download(
     TICKER,

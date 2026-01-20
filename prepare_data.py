@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def prepare_data_for_portfolio(input_file, output_file="features.csv"):
+def prepare_data_for_portfolio(input_file, output_file="data/features.csv"):
     df = pd.read_csv(input_file)
     df['date'] = pd.to_datetime(df['date'])
     df['return'] = df['close'].pct_change()
@@ -16,7 +16,7 @@ def prepare_data_for_portfolio(input_file, output_file="features.csv"):
     
     return result
 
-def simulate_multi_asset_data(input_file, num_assets=5, output_file="features.csv"):
+def simulate_multi_asset_data(input_file, num_assets=5, output_file="data/features.csv"):
     df = pd.read_csv(input_file)
     df['date'] = pd.to_datetime(df['date'])
     df['return'] = df['close'].pct_change()
@@ -45,4 +45,4 @@ def simulate_multi_asset_data(input_file, num_assets=5, output_file="features.cs
 
 if __name__ == "__main__":
     
-    simulate_multi_asset_data("cleaned.csv", num_assets=5)
+    simulate_multi_asset_data("data/cleaned.csv", num_assets=5)

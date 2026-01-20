@@ -265,5 +265,5 @@ def run_portfolio_analysis(file_path, plot=True):
 
 if __name__ == "__main__":
     # Example usage
-    file_path = "features.csv"
+    file_path = "data/features.csv"
     eq_metrics, mv_metrics, eq_cum_returns, mv_cum_returns = run_portfolio_analysis(file_path)

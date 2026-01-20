@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from portfolio_optimization import run_portfolio_analysis
 
 if __name__ == "__main__":
-    file_path = "features.csv"
+    file_path = "data/features.csv"
     
     eq_metrics, mv_metrics, eq_cum_returns, mv_cum_returns = run_portfolio_analysis(file_path)
     
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     plt.ylabel('Cumulative Return')
     plt.legend()
     plt.grid(True)
-    plt.savefig('cumulative_returns.png')
+    plt.savefig('plots/cumulative_returns.png')
     plt.close()
     
     print("\nAnalysis complete. Plots saved to disk.")

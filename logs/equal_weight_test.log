@@ -1,0 +1,8 @@
+2026-01-27 11:51:32,044 - INFO - Running equal-weight strategy in environment
+2026-01-27 11:51:32,176 - INFO - Creating baseline equal-weight strategy
+2026-01-27 11:51:32,186 - INFO - Comparing results
+2026-01-27 11:51:32,332 - INFO - Plot saved to results/env_equal_weight_vs_week1_equal_weight.png
+2026-01-27 11:51:32,332 - INFO - Correlation: 0.9998
+2026-01-27 11:51:32,332 - INFO - Mean Absolute Difference: 0.5582
+2026-01-27 11:51:32,332 - INFO - Final Value Difference: -22.45%
+2026-01-27 11:51:32,332 - ERROR - VALIDATION FAILED: Environment inconsistent with baseline

@@ -1,0 +1,18 @@
+2026-01-27 11:51:29,895 - INFO - Starting random action test
+2026-01-27 11:51:29,918 - INFO - Starting episode 1/5
+2026-01-27 11:51:30,051 - INFO - Episode 1 completed: 4466 steps, final portfolio value: 4.9132
+2026-01-27 11:51:30,051 - INFO - Starting episode 2/5
+2026-01-27 11:51:30,176 - INFO - Episode 2 completed: 4466 steps, final portfolio value: 4.8108
+2026-01-27 11:51:30,176 - INFO - Starting episode 3/5
+2026-01-27 11:51:30,299 - INFO - Episode 3 completed: 4466 steps, final portfolio value: 5.0291
+2026-01-27 11:51:30,300 - INFO - Starting episode 4/5
+2026-01-27 11:51:30,423 - INFO - Episode 4 completed: 4466 steps, final portfolio value: 4.7865
+2026-01-27 11:51:30,423 - INFO - Starting episode 5/5
+2026-01-27 11:51:30,546 - INFO - Episode 5 completed: 4466 steps, final portfolio value: 4.8335
+2026-01-27 11:51:31,524 - INFO - Plot saved to results/random_action_test_plot.png
+2026-01-27 11:51:31,544 - INFO - Test Summary:
+2026-01-27 11:51:31,544 - INFO -   Min portfolio value: 0.4177
+2026-01-27 11:51:31,544 - INFO -   Max portfolio value: 5.0428
+2026-01-27 11:51:31,544 - INFO -   Max step-to-step ratio: 1.1905
+2026-01-27 11:51:31,544 - INFO -   Negative values detected: False
+2026-01-27 11:51:31,544 - INFO -   Non-finite values detected: False

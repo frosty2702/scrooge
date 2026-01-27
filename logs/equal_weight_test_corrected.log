@@ -1,0 +1,8 @@
+2026-01-27 12:08:10,003 - INFO - Running equal-weight strategy in environment
+2026-01-27 12:08:10,150 - INFO - Creating baseline equal-weight strategy
+2026-01-27 12:08:10,151 - INFO - Comparing results
+2026-01-27 12:08:10,319 - INFO - Plot saved to results/env_equal_weight_vs_week1_equal_weight_corrected.png
+2026-01-27 12:08:10,319 - INFO - Correlation: 0.9998
+2026-01-27 12:08:10,319 - INFO - Mean Absolute Difference: 0.0197
+2026-01-27 12:08:10,319 - INFO - Final Value Difference: -0.78%
+2026-01-27 12:08:10,319 - INFO - VALIDATION PASSED: Environment consistent with baseline

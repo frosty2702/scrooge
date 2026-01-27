@@ -1,0 +1,9 @@
+Random Action Test Summary (2026-01-27 11:51)
+----------------------------------------
+Min portfolio value: 0.4177
+Max portfolio value: 5.0428
+Max step-to-step ratio: 1.1905
+Negative values detected: False
+Non-finite values detected: False
+
+ASSESSMENT: PASSED - Environment behaves as expected with random actions

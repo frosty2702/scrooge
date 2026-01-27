@@ -1,0 +1,3 @@
+Scaling factor: 1.279541
+To fix the environment, multiply portfolio values by this factor.
+This accounts for the returns in the first 20 days that the environment skips.

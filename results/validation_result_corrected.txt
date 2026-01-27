@@ -1,0 +1,1 @@
+Equal-weight environment behavior CONSISTENT with baseline

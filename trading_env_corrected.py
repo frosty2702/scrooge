@@ -4,15 +4,6 @@ import numpy as np
 import pandas as pd
 
 class TradingEnv(gym.Env):
-    """
-    Custom trading environment for RL.
-    State = last 20 days of returns for 5 assets
-    Action = portfolio weights for 5 assets
-    Reward = next-day portfolio return
-    
-    This corrected version accounts for the returns in the first window_size days
-    that the environment skips, ensuring consistency with baseline calculations.
-    """
     metadata = {"render.modes": ["human"]}
 
     def __init__(self, csv_file="data/features.csv", window_size=20):
@@ -25,36 +16,28 @@ class TradingEnv(gym.Env):
         self.window_size = window_size
         self.current_step = window_size
         
-        # Calculate the scaling factor to account for first window_size days
         self.scaling_factor = self._calculate_scaling_factor()
         
-        # Action = weights for each asset
         self.action_space = spaces.Box(low=0, high=1, shape=(self.n_assets,), dtype=np.float32)
-
-        # State = last window_size returns for all assets
         self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(window_size, self.n_assets), dtype=np.float32)
 
-        # Portfolio value
-        self.portfolio_value = 1.0 * self.scaling_factor  # Start with scaled value
+        self.portfolio_value = 1.0 * self.scaling_factor
         self.portfolio_values = [self.portfolio_value]
         self.portfolio_returns = []
         self.actions_history = []
 
     def _calculate_scaling_factor(self):
-        """Calculate the scaling factor to account for first window_size days."""
-        # Calculate equal-weight returns for the first window_size days
         n_assets = self.returns.shape[1]
         equal_weights = np.ones(n_assets) / n_assets
         portfolio_returns = self.returns.iloc[:self.window_size].dot(equal_weights)
         
-        # Calculate cumulative return for first window_size days
         scaling_factor = (1 + portfolio_returns).cumprod().iloc[-1]
         return scaling_factor
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.current_step = self.window_size
-        self.portfolio_value = 1.0 * self.scaling_factor  # Start with scaled value
+        self.portfolio_value = 1.0 * self.scaling_factor
         self.portfolio_values = [self.portfolio_value]
         self.portfolio_returns = []
         self.actions_history = []
@@ -65,19 +48,14 @@ class TradingEnv(gym.Env):
 
     def step(self, action):
         action = np.array(action)
-        # normalize weights to sum to 1
         action = action / (np.sum(action) + 1e-8)
         
-        # Store action
         self.actions_history.append(action)
 
-        # next day returns
         ret = self.returns.iloc[self.current_step].values
-        # portfolio return
         portfolio_return = np.dot(action, ret)
         self.portfolio_value *= (1 + portfolio_return)
         
-        # Store portfolio value and return
         self.portfolio_values.append(self.portfolio_value)
         self.portfolio_returns.append(portfolio_return)
 
@@ -103,21 +81,12 @@ class TradingEnv(gym.Env):
         print(f"Step: {self.current_step}, Portfolio Value: {self.portfolio_value:.4f}")
         
     def get_equal_weight_baseline(self):
-        """
-        Calculate the equal-weight baseline directly from data
-        
-        Returns:
-            DataFrame with date and portfolio value
-        """
-        # Calculate equal-weight portfolio returns
         n_assets = self.returns.shape[1]
         equal_weights = np.ones(n_assets) / n_assets
         portfolio_returns = self.returns.dot(equal_weights)
         
-        # Calculate cumulative portfolio value
         portfolio_values = (1 + portfolio_returns).cumprod()
         
-        # Create DataFrame with results
         results = pd.DataFrame({
             'Date': portfolio_values.index,
             'PortfolioValue': portfolio_values.values

@@ -16,7 +16,6 @@ if __name__ == "__main__":
         obs, reward, done, _, info = env.step(action)
         portfolio_values.append(info["portfolio_value"])
 
-    # Plot portfolio value
     plt.figure(figsize=(12,6))
     plt.plot(portfolio_values)
     plt.title("RL Portfolio Value Over Time")

@@ -8,6 +8,5 @@ if __name__ == "__main__":
     model = PPO("MlpPolicy", env, verbose=1)
     model.learn(total_timesteps=50000)
 
-    # Save the model
     model.save("models/ppo_trading_model")
     print("PPO model trained and saved to models/ppo_trading_model.zip")

@@ -1,48 +1,41 @@
 import pandas as pd
 import numpy as np
 
-def prepare_data_for_portfolio(input_file, output_file="data/features.csv"):
+def simulate_multi_asset_data(input_file, output_file="data/features.csv", seed=42):
+    np.random.seed(seed)
+    
     df = pd.read_csv(input_file)
     df['date'] = pd.to_datetime(df['date'])
     df['return'] = df['close'].pct_change()
     df = df.dropna(subset=['return'])
-    df['asset'] = 'Asset1'
-    result = df[['date', 'asset', 'return']].rename(
-        columns={'date': 'Date', 'asset': 'Asset', 'return': 'Return'}
-    )
     
-    result.to_csv(output_file, index=False)
-    print(f"Data prepared and saved to {output_file}")
+    base = df['return'].values
+    dates = df['date'].values
+    n = len(base)
     
-    return result
-
-def simulate_multi_asset_data(input_file, num_assets=5, output_file="data/features.csv"):
-    df = pd.read_csv(input_file)
-    df['date'] = pd.to_datetime(df['date'])
-    df['return'] = df['close'].pct_change()
-    df = df.dropna(subset=['return'])
-    all_assets = []
+    assets = {
+        'Equity': base * 1.2 + np.random.normal(0, 0.003, n) + 0.0008,
+        'Bond': base * -0.2 + np.random.normal(0, 0.001, n) + 0.0002,
+        'Commodity': base * 0.3 + np.random.normal(0, 0.008, n),
+        'Defensive': np.random.normal(0.0002, 0.001, n),
+    }
     
     all_assets = []
-    for i in range(1, num_assets + 1):
-        asset_df = df.copy()
-        asset_df['asset'] = f'Asset{i}'
-        if i > 1:
-            base_return = asset_df['return'].values
-            asset_df['return'] = base_return * (0.8 + 0.4 * (i / num_assets))
+    for asset_name, returns in assets.items():
+        asset_df = pd.DataFrame({
+            'Date': dates,
+            'Asset': asset_name,
+            'Return': returns
+        })
         all_assets.append(asset_df)
-    result = pd.concat(all_assets)
-  
-    result = result[['date', 'asset', 'return']].rename(
-        columns={'date': 'Date', 'asset': 'Asset', 'return': 'Return'}
-    )
     
-   
+    result = pd.concat(all_assets).reset_index(drop=True)
     result.to_csv(output_file, index=False)
-    print(f"Multi-asset data prepared and saved to {output_file}")
+    print(f"Multi-asset data saved to {output_file}")
+    print(f"Assets: {list(assets.keys())}")
+    print(f"Rows: {len(result)}")
     
     return result
 
 if __name__ == "__main__":
-    
-    simulate_multi_asset_data("data/cleaned.csv", num_assets=5)
+    simulate_multi_asset_data("data/cleaned.csv")

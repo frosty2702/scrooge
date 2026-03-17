@@ -1,0 +1,26 @@
+{
+  "strategies": [
+    {
+      "name": "Equal Weight",
+      "total_return_pct": 301.65042917774434,
+      "sharpe": 1.1313272326414552,
+      "volatility": 7.129577949825593,
+      "max_drawdown": -17.076746538003228
+    },
+    {
+      "name": "Mean Variance",
+      "total_return_pct": 123.27231686587501,
+      "sharpe": 0.6121444370297735,
+      "volatility": 7.993252374997946,
+      "max_drawdown": -18.948585754193715
+    },
+    {
+      "name": "PPO Agent",
+      "total_return_pct": 253.93329178515614,
+      "sharpe": 1.0362898372554146,
+      "volatility": 7.128214551700472,
+      "max_drawdown": -17.500066802850423
+    }
+  ],
+  "computed_at": "2026-03-17T09:57:19.809783"
+}

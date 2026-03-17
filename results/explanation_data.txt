@@ -1,0 +1,13 @@
+Feature Importance (Aggregate):
+  volatility -> 0.32
+  returns -> 0.31
+  ma_ratio -> 0.32
+  regime -> 0.05
+
+Total decisions: 4466
+
+Sample snapshot (timestep 2233):
+  date: 2016-12-14 00:00:00
+  features: {'volatility': 0.006479352246969938, 'returns': 0.0032767881639301777, 'ma_ratio': 0.899942498092441, 'regime': 1.0}
+  weights: [0.43195638060569763, 3.567736825971224e-07, 0.2284352332353592, 0.3396080434322357]
+  feature_importance: {'volatility': 0.27108547191893595, 'returns': 0.31318448403185495, 'ma_ratio': 0.27108547191893595, 'regime': 0.1446445564912024}

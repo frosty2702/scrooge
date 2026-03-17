@@ -14,11 +14,18 @@ def simulate_multi_asset_data(input_file, output_file="data/features.csv", seed=
     n = len(base)
     
     assets = {
-        'Equity': base * 1.2 + np.random.normal(0, 0.003, n) + 0.0008,
-        'Bond': base * -0.2 + np.random.normal(0, 0.001, n) + 0.0002,
-        'Commodity': base * 0.3 + np.random.normal(0, 0.008, n),
-        'Defensive': np.random.normal(0.0002, 0.001, n),
-    }
+    # Equity: realistic stock market ~12% annual, moderate vol
+    'Equity': base * 1.0 + np.random.normal(0.0003, 0.008, n),
+    
+    # Bond: low return ~3% annual, low vol, slight negative correlation
+    'Bond': base * -0.1 + np.random.normal(0.00012, 0.003, n),
+    
+    # Commodity: medium return ~5% annual, medium vol
+    'Commodity': base * 0.2 + np.random.normal(0.0002, 0.006, n),
+    
+    # Defensive: low return ~2% annual, very low vol
+    'Defensive': np.random.normal(0.00008, 0.002, n),
+}
     
     all_assets = []
     for asset_name, returns in assets.items():

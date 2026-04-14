@@ -1,27 +1,75 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import Sidebar from "../components/Sidebar";
+import { fetchLatestSimulation, fetchMarketRegime, fetchComparison, getToken, getUser } from "../lib/api";
+
+const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function DashboardPage() {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const router = useRouter();
-  const [activePeriod, setActivePeriod] = useState("1 year");
 
+  const [sim, setSim] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [regime, setRegime] = useState(null);
+  const [comparison, setComparison] = useState(null);
+
+  // Auth guard + load data from API
   useEffect(() => {
+    const token = getToken();
+    if (!token) { router.replace("/login"); return; }
+
+    setUser(getUser());
+
+    fetchLatestSimulation().then((data) => {
+      if (data?.error === "unauthenticated") { router.replace("/login"); return; }
+      if (!data?.error) setSim(data);
+      setLoading(false);
+    });
+
+    fetchMarketRegime().then((data) => {
+      if (!data?.error) setRegime(data);
+    });
+
+    fetchComparison().then((data) => {
+      if (!data?.error) setComparison(data);
+    });
+  }, []);
+
+  // Chart — rebuilds whenever sim changes
+  useEffect(() => {
+    if (!canvasRef.current) return;
     let mounted = true;
+
     import("chart.js/auto").then(({ default: Chart }) => {
       if (!mounted || !canvasRef.current) return;
       if (chartRef.current) chartRef.current.destroy();
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const scrooge = [10000, 10180, 10310, 10420, 10380, 10530, 10650, 10610, 10740, 10870, 10960, 11106];
-      const nifty = [10000, 10110, 10200, 10290, 10240, 10360, 10400, 10370, 10460, 10540, 10610, 10710];
+
+      let labels, scroogeData, niftyData;
+
+      if (sim?.decisions?.length) {
+        labels = sim.decisions.map((d) => d.date.slice(0, 10));
+        scroogeData = sim.decisions.map((d) => d.capital);
+        // Generate a benchmark line growing at ~8% annualised over the same points
+        const initial = sim.initial_amount;
+        const dailyReturn = Math.pow(1.08, 5 / 252) - 1;
+        niftyData = sim.decisions.map((_, i) => initial * Math.pow(1 + dailyReturn, i));
+      } else {
+        // Placeholder chart
+        labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        scroogeData = [10000, 10180, 10310, 10420, 10380, 10530, 10650, 10610, 10740, 10870, 10960, 11106];
+        niftyData   = [10000, 10110, 10200, 10290, 10240, 10360, 10400, 10370, 10460, 10540, 10610, 10710];
+      }
+
       chartRef.current = new Chart(canvasRef.current, {
         type: "line",
         data: {
-          labels: months,
+          labels,
           datasets: [
             {
-              data: scrooge,
+              data: scroogeData,
               borderColor: "#6366f1",
               backgroundColor: "rgba(99,102,241,0.06)",
               borderWidth: 2,
@@ -30,7 +78,7 @@ export default function DashboardPage() {
               tension: 0.4,
             },
             {
-              data: nifty,
+              data: niftyData,
               borderColor: "rgba(255,255,255,0.2)",
               backgroundColor: "transparent",
               borderWidth: 1.5,
@@ -47,14 +95,14 @@ export default function DashboardPage() {
           plugins: { legend: { display: false } },
           scales: {
             x: {
-              ticks: { color: "rgba(255,255,255,0.25)", font: { size: 10 } },
+              ticks: { color: "rgba(255,255,255,0.25)", font: { size: 10 }, maxTicksLimit: 8 },
               grid: { color: "rgba(255,255,255,0.02)" },
             },
             y: {
               ticks: {
                 color: "rgba(255,255,255,0.25)",
                 font: { size: 10 },
-                callback: (v) => `₹${Number(v).toLocaleString("en-IN")}`,
+                callback: (v) => `₹${Number(v.toFixed(0)).toLocaleString("en-IN")}`,
               },
               grid: { color: "rgba(255,255,255,0.02)" },
             },
@@ -62,16 +110,43 @@ export default function DashboardPage() {
         },
       });
     });
+
     return () => {
       mounted = false;
       if (chartRef.current) chartRef.current.destroy();
     };
-  }, []);
+  }, [sim]);
 
-  const navigate = (url) => {
-    if (!url) return;
-    router.push(url);
-  };
+  // Derived values
+  const fmt = (n) => `₹${Number(Number(n).toFixed(0)).toLocaleString("en-IN")}`;
+  const lastDecision = sim?.decisions?.[sim.decisions.length - 1];
+  const weights = lastDecision?.weights || [];
+  const assetNames = sim?.asset_names || [];
+
+  // Aggregate feature importance
+  const aggImportance = (() => {
+    if (!sim?.decisions?.length) return [];
+    const totals = {};
+    let count = 0;
+    sim.decisions.forEach((d) => {
+      if (!d.feature_importance) return;
+      Object.entries(d.feature_importance).forEach(([k, v]) => { totals[k] = (totals[k] || 0) + v; });
+      count++;
+    });
+    if (!count) return [];
+    const sum = Object.values(totals).reduce((a, b) => a + b, 0);
+    return Object.entries(totals)
+      .map(([k, v]) => ({ name: k, pct: Math.round((v / sum) * 100) }))
+      .sort((a, b) => b.pct - a.pct);
+  })();
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const userName = user?.name?.split(" ")[0] || "there";
+
+  const returnPct = sim?.total_return_pct;
+  const simReturn = returnPct != null ? `${returnPct >= 0 ? "+" : ""}${returnPct.toFixed(2)}%` : null;
+  const benchmarkReturn = sim ? "+8.0% est." : "+7.1%";
 
   return (
     <div className="page">
@@ -79,138 +154,167 @@ export default function DashboardPage() {
       <div className="orb orb2" />
       <div className="disclaimer">⚠ Simulation only — no real investments are made. Past performance does not guarantee future results.</div>
       <div className="app">
-        <div className="sidebar">
-          <div className="sidebar-logo">
-            <div className="sidebar-logo-mark">S</div>
-            <div className="sidebar-logo-name">Scrooge<span>.</span>ai</div>
-          </div>
-          <div className="sidebar-section">Main</div>
-          <div className="nav-item active"><span className="icon">📊</span> Dashboard</div>
-          <button className="nav-item" onClick={() => navigate("/simulate")}><span className="icon">🤖</span> Simulate</button>
-          <div className="nav-item"><span className="icon">🧠</span> AI Decisions</div>
-          <div className="nav-item"><span className="icon">📈</span> Portfolio</div>
-          <div className="sidebar-section">Analysis</div>
-          <div className="nav-item"><span className="icon">🔍</span> XAI Insights</div>
-          <div className="nav-item"><span className="icon">📋</span> Decision Log</div>
-          <div className="nav-item"><span className="icon">📄</span> Reports</div>
-          <div className="sidebar-section">Account</div>
-          <div className="nav-item"><span className="icon">⚙️</span> Settings</div>
-          <div className="sidebar-bottom">
-            <div className="user-row">
-              <div className="avatar">VR</div>
-              <div><div className="user-name">Vishal R.</div><div className="user-plan">Conservative · Active</div></div>
-            </div>
-          </div>
-        </div>
+        <Sidebar active="Dashboard" />
+
         <div className="main">
           <div className="top-row">
             <div>
-              <div className="greeting">Good evening, Vishal 👋</div>
-              <div className="greeting-sub">Your AI agent is active · 4 asset classes · Last updated 2 mins ago</div>
+              <div className="greeting">{greeting}, {userName} 👋</div>
+              <div className="greeting-sub">
+                {loading
+                  ? "Loading your data…"
+                  : sim
+                  ? `Last simulation: ${sim.decisions[0]?.date.slice(0, 10)} → ${lastDecision?.date.slice(0, 10)} · ${assetNames.length} asset classes`
+                  : "No simulation yet — run one to see your results here"}
+              </div>
             </div>
             <div className="top-actions">
-              <button className="btn-sm btn-outline" type="button">Export report</button>
-              <button className="btn-sm btn-primary" onClick={() => navigate("/simulate")} type="button">Run simulation</button>
+              <button className="btn-sm btn-outline" type="button" onClick={() => router.push("/ai-decisions")}>View decisions</button>
+              <button className="btn-sm btn-primary" onClick={() => router.push("/simulate")} type="button">Run simulation</button>
             </div>
           </div>
+
           <div className="metrics">
             <div className="metric">
-              <div className="metric-label">Portfolio Value</div>
-              <div className="metric-value green">₹11,106</div>
-              <div className="metric-sub">Started with ₹10,000</div>
-              <div className="metric-badge badge-green">+₹1,106</div>
+              <div className="metric-label">Final Portfolio Value</div>
+              <div className={`metric-value ${sim ? (returnPct >= 0 ? "green" : "red") : "muted"}`}>
+                {sim ? fmt(sim.final_amount) : "—"}
+              </div>
+              <div className="metric-sub">{sim ? `Started with ${fmt(sim.initial_amount)}` : "Run a simulation"}</div>
+              {sim && <div className={`metric-badge ${returnPct >= 0 ? "badge-green" : "badge-red"}`}>{returnPct >= 0 ? "+" : ""}{fmt(sim.final_amount - sim.initial_amount)}</div>}
             </div>
             <div className="metric">
-              <div className="metric-label">Annual Return</div>
-              <div className="metric-value green">+11.06%</div>
-              <div className="metric-sub">vs 10% Nifty 50 avg</div>
-              <div className="metric-badge badge-green">Beating market</div>
+              <div className="metric-label">Total Return</div>
+              <div className={`metric-value ${sim ? (returnPct >= 0 ? "green" : "red") : "muted"}`}>
+                {sim ? simReturn : "—"}
+              </div>
+              <div className="metric-sub">{sim ? `Sharpe: ${sim.metrics.sharpe.toFixed(2)}` : "Run a simulation"}</div>
+              {sim && <div className={`metric-badge ${returnPct >= 0 ? "badge-green" : "badge-red"}`}>{returnPct >= 0 ? "Profitable" : "Loss"}</div>}
             </div>
             <div className="metric">
               <div className="metric-label">Sharpe Ratio</div>
-              <div className="metric-value blue">1.39</div>
+              <div className={`metric-value ${sim ? "blue" : "muted"}`}>
+                {sim ? sim.metrics.sharpe.toFixed(2) : "—"}
+              </div>
               <div className="metric-sub">Risk-adjusted return</div>
-              <div className="metric-badge badge-blue">Above average</div>
+              {sim && <div className="metric-badge badge-blue">{sim.metrics.sharpe > 1 ? "Above average" : "Below average"}</div>}
             </div>
             <div className="metric">
               <div className="metric-label">Max Drawdown</div>
-              <div className="metric-value amber">-6.03%</div>
+              <div className={`metric-value ${sim ? "amber" : "muted"}`}>
+                {sim ? `${sim.metrics.max_drawdown.toFixed(2)}%` : "—"}
+              </div>
               <div className="metric-sub">Worst loss period</div>
             </div>
           </div>
+
           <div className="mid-row">
             <div className="card">
               <div className="card-title">Market Regime</div>
               <div className="card-sub">Current market conditions</div>
-              <div className="regime-pill regime-bull"><div className="pulse" /> Bull Market</div>
-              <div className="regime-row"><span>NIFTY 50 trend</span><span className="green">+2.3% (30d)</span></div>
-              <div className="regime-row"><span>Volatility index</span><span className="amber">Moderate</span></div>
-              <div className="regime-row"><span>Agent stance</span><span className="blue">Growth-oriented</span></div>
-              <div className="regime-row"><span>Recommendation</span><span className="green">Hold Equity</span></div>
+              <div className={`regime-pill ${regime?.regime === "Bear Market" ? "regime-bear" : "regime-bull"}`}><div className="pulse" /> {regime?.regime || "Bull Market"}</div>
+              <div className="regime-row"><span>NIFTY 50 trend</span><span className="green">{regime ? `${regime.trend_30d_pct >= 0 ? "+" : ""}${regime.trend_30d_pct}% (30d)` : "+2.3% (30d)"}</span></div>
+              <div className="regime-row"><span>Volatility index</span><span className="amber">{regime?.volatility_level || "Moderate"}</span></div>
+              <div className="regime-row"><span>Agent stance</span><span className="blue">{regime?.stance || "Growth-oriented"}</span></div>
+              <div className="regime-row"><span>Recommendation</span><span className="green">{regime?.recommendation || "Hold Equity"}</span></div>
             </div>
+
             <div className="card">
               <div className="card-title">Agent Confidence</div>
-              <div className="card-sub">How certain is the AI?</div>
-              <div className="conf-ring">
-                <svg width="88" height="88" viewBox="0 0 88 88">
-                  <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
-                  <circle cx="44" cy="44" r="36" fill="none" stroke="#6366f1" strokeWidth="7" strokeDasharray="226" strokeDashoffset="57" strokeLinecap="round" />
-                </svg>
-                <div className="conf-center"><div className="conf-val">75%</div><div className="conf-lbl">confident</div></div>
-              </div>
-              <div className="conf-bar-row"><span>Returns</span><div className="bar-bg"><div className="bar-fill" style={{ width: "85%" }} /></div><span style={{ color: "#818cf8", fontSize: "10px" }}>85%</span></div>
-              <div className="conf-bar-row"><span>Volatility</span><div className="bar-bg"><div className="bar-fill" style={{ width: "70%", background: "#34d399" }} /></div><span style={{ color: "#34d399", fontSize: "10px" }}>70%</span></div>
-              <div className="conf-bar-row"><span>Momentum</span><div className="bar-bg"><div className="bar-fill" style={{ width: "65%", background: "#fbbf24" }} /></div><span style={{ color: "#fbbf24", fontSize: "10px" }}>65%</span></div>
+              <div className="card-sub">Feature importance from last simulation</div>
+              {aggImportance.length > 0 ? (
+                <>
+                  <div className="conf-ring">
+                    <svg width="88" height="88" viewBox="0 0 88 88">
+                      <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
+                      <circle cx="44" cy="44" r="36" fill="none" stroke="#6366f1" strokeWidth="7"
+                        strokeDasharray="226"
+                        strokeDashoffset={226 - (226 * aggImportance[0].pct) / 100}
+                        strokeLinecap="round" />
+                    </svg>
+                    <div className="conf-center">
+                      <div className="conf-val">{aggImportance[0].pct}%</div>
+                      <div className="conf-lbl">{aggImportance[0].name}</div>
+                    </div>
+                  </div>
+                  {aggImportance.map((f, i) => (
+                    <div className="conf-bar-row" key={f.name}>
+                      <span>{f.name.charAt(0).toUpperCase() + f.name.slice(1)}</span>
+                      <div className="bar-bg"><div className="bar-fill" style={{ width: `${f.pct}%`, background: ASSET_COLORS[i] }} /></div>
+                      <span style={{ color: ASSET_COLORS[i], fontSize: "10px" }}>{f.pct}%</span>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="empty-card-msg">Run a simulation to see agent confidence</div>
+              )}
             </div>
+
             <div className="card">
               <div className="card-title">Goal Tracker</div>
-              <div className="card-sub">Wealth building · ₹1,00,000 target</div>
-              <div className="goal-amount">₹34,210</div>
-              <div className="goal-target">of ₹1,00,000 goal</div>
-              <div className="goal-bar-bg"><div className="goal-bar" /></div>
-              <div className="goal-pct"><span>34% complete</span><span>Est. Dec 2027</span></div>
-              <div className="goal-stats">
-                <div className="goal-stat"><span>Monthly needed</span><span className="green">₹3,200</span></div>
-                <div className="goal-stat"><span>On track</span><span className="green">Yes ✓</span></div>
-                <div className="goal-stat"><span>Risk level</span><span className="blue">Conservative</span></div>
-              </div>
+              <div className="card-sub">{user?.investment_goal || "Wealth building"}</div>
+              {sim ? (
+                <>
+                  <div className="goal-amount">{fmt(sim.final_amount)}</div>
+                  <div className="goal-target">current portfolio value</div>
+                  <div className="goal-bar-bg">
+                    <div className="goal-bar" style={{ width: `${Math.min(Math.abs(returnPct), 100)}%` }} />
+                  </div>
+                  <div className="goal-pct">
+                    <span>{returnPct >= 0 ? "+" : ""}{returnPct.toFixed(2)}% return</span>
+                    <span>{sim.metrics.volatility != null ? `${sim.metrics.volatility.toFixed(1)}% volatility` : ""}</span>
+                  </div>
+                  <div className="goal-stats">
+                    <div className="goal-stat"><span>Sharpe ratio</span><span className="blue">{sim.metrics.sharpe.toFixed(2)}</span></div>
+                    <div className="goal-stat"><span>Max drawdown</span><span className="amber">{sim.metrics.max_drawdown.toFixed(2)}%</span></div>
+                    <div className="goal-stat"><span>Risk level</span><span className="blue">{user?.risk_profile || "Moderate"}</span></div>
+                  </div>
+                </>
+              ) : (
+                <div className="empty-card-msg">Run a simulation to track your goal progress</div>
+              )}
             </div>
           </div>
+
           <div className="bottom-row">
             <div className="card">
-              <div className="card-title">Portfolio vs Nifty 50</div>
-              <div className="card-sub">Your AI portfolio outperforming the index</div>
+              <div className="card-title">Portfolio vs Benchmark</div>
+              <div className="card-sub">{sim ? "AI portfolio vs estimated 8% annualised benchmark" : "Run a simulation to see your portfolio performance"}</div>
               <div className="legend">
-                <span><span className="legend-dot" style={{ background: "#6366f1" }} />Scrooge AI (+11.06%)</span>
-                <span><span className="legend-dot" style={{ background: "rgba(255,255,255,0.25)" }} />Nifty 50 (+7.1%)</span>
+                <span><span className="legend-dot" style={{ background: "#6366f1" }} />Scrooge AI ({sim ? simReturn : "—"})</span>
+                <span><span className="legend-dot" style={{ background: "rgba(255,255,255,0.25)" }} />Benchmark ({benchmarkReturn})</span>
               </div>
               <div className="chart-area"><canvas ref={canvasRef} /></div>
             </div>
+
             <div className="card">
               <div className="card-title">Asset Allocation</div>
-              <div className="card-sub">Current portfolio weights</div>
+              <div className="card-sub">{sim ? "Final weights from last simulation" : "Run a simulation to see allocation"}</div>
               <div style={{ marginBottom: "16px" }}>
-                <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#6366f1" }} />Bond</div><div className="alloc-right"><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "43%", background: "#6366f1" }} /></div><div className="alloc-pct blue">43%</div></div></div>
-                <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#34d399" }} />Equity</div><div className="alloc-right"><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "34%", background: "#34d399" }} /></div><div className="alloc-pct green">34%</div></div></div>
-                <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#fbbf24" }} />Defensive</div><div className="alloc-right"><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "23%", background: "#fbbf24" }} /></div><div className="alloc-pct amber">23%</div></div></div>
-                <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "rgba(255,255,255,0.15)" }} />Commodity</div><div className="alloc-right"><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "0%" }} /></div><div className="alloc-pct" style={{ color: "rgba(255,255,255,0.2)" }}>0%</div></div></div>
+                {sim && assetNames.length > 0 ? (
+                  assetNames.map((name, i) => (
+                    <div className="alloc-item" key={name}>
+                      <div className="alloc-left">
+                        <div className="alloc-dot" style={{ background: ASSET_COLORS[i] }} />
+                        {name}
+                      </div>
+                      <div className="alloc-right">
+                        <div className="alloc-bar-bg">
+                          <div className="alloc-bar" style={{ width: `${((weights[i] || 0) * 100).toFixed(0)}%`, background: ASSET_COLORS[i] }} />
+                        </div>
+                        <div className="alloc-pct" style={{ color: ASSET_COLORS[i] }}>
+                          {((weights[i] || 0) * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-card-msg">No data yet</div>
+                )}
               </div>
-              <div className="quick-sim">
-                <div>
-                  <div className="input-label">Quick simulate</div>
-                  <input className="amount-input" type="text" defaultValue="₹10,000" />
-                </div>
-                <div className="period-toggle">
-                  <button className={`period-btn ${activePeriod === "6 months" ? "active" : ""}`} onClick={() => setActivePeriod("6 months")} type="button">6 months</button>
-                  <button className={`period-btn ${activePeriod === "1 year" ? "active" : ""}`} onClick={() => setActivePeriod("1 year")} type="button">1 year</button>
-                </div>
-                <div>
-                  <div className="sim-stat"><span>Best year (2014)</span><span className="green">+18.9%</span></div>
-                  <div className="sim-stat"><span>Worst year (2008)</span><span className="red">-12.2%</span></div>
-                  <div className="sim-stat"><span>17-year return</span><span className="green">+280%</span></div>
-                </div>
-                <button className="run-btn" onClick={() => navigate("/simulate")} type="button">Run Simulation →</button>
-              </div>
+              <button className="run-btn" onClick={() => router.push("/simulate")} type="button">
+                {sim ? "Run New Simulation →" : "Run Simulation →"}
+              </button>
             </div>
           </div>
         </div>
@@ -246,27 +350,30 @@ export default function DashboardPage() {
         .top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 12px; }
         .greeting { font-size: 22px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 4px; }
         .greeting-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
-        .top-actions { display: flex; gap: 10px; }
+        .top-actions { display: flex; gap: 10px; flex-shrink: 0; }
         .btn-sm { padding: 9px 20px; border-radius: 9px; font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
         .btn-outline { background: transparent; border: 0.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
         .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; box-shadow: 0 0 20px rgba(99,102,241,0.3); }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(99,102,241,0.5); }
         .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-        .metric { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px 18px; transition: all 0.2s; cursor: default; }
+        .metric { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px 18px; transition: all 0.2s; }
         .metric:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); }
         .metric-label { font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
         .metric-value { font-size: 24px; font-weight: 700; letter-spacing: -1px; margin-bottom: 4px; }
         .metric-sub { font-size: 11px; color: rgba(255,255,255,0.25); }
         .metric-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-top: 6px; }
-        .green { color: #34d399; } .blue { color: #818cf8; } .amber { color: #fbbf24; } .red { color: #f87171; }
+        .green { color: #34d399; } .blue { color: #818cf8; } .amber { color: #fbbf24; } .red { color: #f87171; } .muted { color: rgba(255,255,255,0.2); }
         .badge-green { background: rgba(52,211,153,0.1); color: #34d399; }
+        .badge-red { background: rgba(248,113,113,0.1); color: #f87171; }
         .badge-blue { background: rgba(129,140,248,0.1); color: #818cf8; }
         .mid-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .card { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 18px; }
         .card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; letter-spacing: -0.2px; }
         .card-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+        .empty-card-msg { font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; padding: 20px 0; }
         .regime-pill { display: inline-flex; align-items: center; gap: 7px; padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
         .regime-bull { background: rgba(52,211,153,0.1); color: #34d399; border: 0.5px solid rgba(52,211,153,0.2); }
+        .regime-bear { background: rgba(248,113,113,0.1); color: #f87171; border: 0.5px solid rgba(248,113,113,0.2); }
         .pulse { width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.6)} }
         .regime-row { display: flex; justify-content: space-between; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
@@ -284,7 +391,7 @@ export default function DashboardPage() {
         .goal-amount { font-size: 26px; font-weight: 700; letter-spacing: -1px; color: #34d399; }
         .goal-target { font-size: 12px; color: rgba(255,255,255,0.3); margin: 3px 0 14px; }
         .goal-bar-bg { background: rgba(255,255,255,0.05); border-radius: 6px; height: 8px; margin-bottom: 8px; overflow: hidden; }
-        .goal-bar { height: 8px; border-radius: 6px; background: linear-gradient(90deg, #6366f1, #34d399); width: 34%; position: relative; }
+        .goal-bar { height: 8px; border-radius: 6px; background: linear-gradient(90deg, #6366f1, #34d399); position: relative; transition: width 0.6s ease; }
         .goal-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.15), transparent); border-radius: 6px; }
         .goal-pct { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.3); }
         .goal-stats { margin-top: 14px; }
@@ -302,15 +409,6 @@ export default function DashboardPage() {
         .alloc-pct { font-size: 13px; font-weight: 600; width: 36px; text-align: right; }
         .alloc-bar-bg { width: 80px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; }
         .alloc-bar { height: 4px; border-radius: 2px; }
-        .quick-sim { display: flex; flex-direction: column; gap: 12px; }
-        .input-label { font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-        .amount-input { width: 100%; background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 11px 14px; font-size: 15px; font-weight: 600; color: #fff; outline: none; }
-        .period-toggle { display: flex; gap: 6px; }
-        .period-btn { flex: 1; padding: 9px; background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 8px; font-size: 12px; color: rgba(255,255,255,0.45); cursor: pointer; text-align: center; transition: all 0.2s; }
-        .period-btn.active { background: rgba(99,102,241,0.15); border-color: #6366f1; color: #818cf8; }
-        .sim-stat { display: flex; justify-content: space-between; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
-        .sim-stat:last-child { border-bottom: none; }
-        .sim-stat span:first-child { color: rgba(255,255,255,0.35); }
         .run-btn { width: 100%; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 0 20px rgba(99,102,241,0.25); transition: all 0.2s; }
         .run-btn:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(99,102,241,0.45); }
 
@@ -325,6 +423,21 @@ export default function DashboardPage() {
           .main { padding: 18px; }
           .top-row { flex-direction: column; }
           .top-actions { width: 100%; }
+        }
+        @media (max-width: 768px) {
+          .metrics { grid-template-columns: repeat(2, 1fr); }
+          .top-row { flex-direction: column; }
+          .top-actions { width: 100%; flex-direction: column; }
+          .top-actions button { width: 100%; }
+          .mid-row { grid-template-columns: 1fr; }
+          .bottom-row { grid-template-columns: 1fr; }
+          .main { padding: 16px; }
+        }
+        @media (max-width: 480px) {
+          .metrics { grid-template-columns: 1fr; }
+          .main { padding: 12px; }
+          .greeting { font-size: 18px; }
+          .disclaimer { padding: 9px 14px; }
         }
         @media (max-width: 640px) {
           .metrics { grid-template-columns: 1fr; }

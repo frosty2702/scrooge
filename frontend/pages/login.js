@@ -2,9 +2,99 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+const API = "http://localhost:8000";
+
 export default function LoginPage() {
   const [tab, setTab] = useState("login");
   const router = useRouter();
+
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  // Register form state
+  const [regName, setRegName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Forgot password state
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotResult, setForgotResult] = useState(null);
+  const [forgotError, setForgotError] = useState("");
+
+  const handleLogin = async () => {
+    setError("");
+    if (!loginEmail || !loginPassword) {
+      setError("Please fill in all fields");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail || "Login failed");
+        return;
+      }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      router.push("/dashboard");
+    } catch {
+      setError("Network error. Is the server running?");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = () => {
+    setError("");
+    if (!regName || !regEmail || !regPassword) {
+      setError("Please fill in all fields");
+      return;
+    }
+    if (regPassword.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    // Store credentials — KYC page will complete registration with risk profile + goal
+    sessionStorage.setItem("reg", JSON.stringify({ name: regName, email: regEmail, password: regPassword }));
+    router.push("/kyc");
+  };
+
+  const handleForgot = async () => {
+    setForgotError("");
+    if (!forgotEmail) {
+      setForgotError("Please enter your email");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const res = await fetch(`${API}/api/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setForgotError(data.detail || "Failed");
+        setForgotLoading(false);
+        return;
+      }
+      setForgotResult(data);
+    } catch {
+      setForgotError("Network error");
+    }
+    setForgotLoading(false);
+  };
 
   return (
     <div className="page">
@@ -89,50 +179,82 @@ export default function LoginPage() {
           <div className="tabs">
             <button
               className={`tab ${tab === "login" ? "active" : ""}`}
-              onClick={() => setTab("login")}
+              onClick={() => { setTab("login"); setError(""); }}
               type="button"
             >
               Sign in
             </button>
             <button
               className={`tab ${tab === "register" ? "active" : ""}`}
-              onClick={() => setTab("register")}
+              onClick={() => { setTab("register"); setError(""); }}
               type="button"
             >
               Register
             </button>
           </div>
 
+          {error && <div className="error-msg">{error}</div>}
+
           {tab === "login" ? (
             <div>
               <div className="field">
                 <label>Email Address</label>
-                <input type="email" placeholder="you@example.com" />
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                />
               </div>
               <div className="field">
                 <label>Password</label>
-                <input type="password" placeholder="••••••••" />
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                />
               </div>
-              <button className="submit-btn" onClick={() => router.push("/dashboard")} type="button">
-                Sign in
+              <div className="forgot-link">
+                <button type="button" onClick={() => setShowForgot(true)}>Forgot password?</button>
+              </div>
+              <button className="submit-btn" onClick={handleLogin} type="button" disabled={loading}>
+                {loading ? "Signing in…" : "Sign in"}
               </button>
             </div>
           ) : (
             <div>
               <div className="field">
                 <label>Full Name</label>
-                <input type="text" placeholder="Vishal Rajendran" />
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                />
               </div>
               <div className="field">
                 <label>Email Address</label>
-                <input type="email" placeholder="you@example.com" />
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                />
               </div>
               <div className="field">
                 <label>Password</label>
-                <input type="password" placeholder="••••••••" />
+                <input
+                  type="password"
+                  placeholder="Min. 6 characters"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                />
               </div>
-              <button className="submit-btn" onClick={() => router.push("/kyc")} type="button">
-                Create account
+              <button className="submit-btn" onClick={handleRegister} type="button" disabled={loading}>
+                Continue to profile setup →
               </button>
             </div>
           )}
@@ -172,6 +294,37 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {showForgot && (
+        <div className="modal-overlay" onClick={() => setShowForgot(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-title">Reset Password</div>
+            {!forgotResult ? (
+              <>
+                <div className="modal-sub">Enter your email and we'll generate a reset code.</div>
+                {forgotError && <div className="modal-error">{forgotError}</div>}
+                <div className="field">
+                  <label>Email Address</label>
+                  <input type="email" placeholder="you@example.com" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} />
+                </div>
+                <button className="submit-btn" onClick={handleForgot} disabled={forgotLoading} type="button">
+                  {forgotLoading ? "Sending…" : "Get Reset Code"}
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="modal-success">Reset code generated!</div>
+                <div className="modal-sub">Copy this code and use it on the reset page. In production this would be emailed.</div>
+                <div className="reset-token-box">{forgotResult.reset_token}</div>
+                <button className="submit-btn" onClick={() => { setShowForgot(false); router.push(`/reset-password?token=${forgotResult.reset_token}`); }} type="button">
+                  Go to Reset Page →
+                </button>
+              </>
+            )}
+            <button className="modal-close" onClick={() => { setShowForgot(false); setForgotResult(null); setForgotError(""); }} type="button">Cancel</button>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         * {
@@ -214,22 +367,12 @@ export default function LoginPage() {
           animation: float2 10s ease-in-out infinite;
         }
         @keyframes float1 {
-          0%,
-          100% {
-            transform: translate(0, 0);
-          }
-          50% {
-            transform: translate(-20px, 20px);
-          }
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-20px, 20px); }
         }
         @keyframes float2 {
-          0%,
-          100% {
-            transform: translate(0, 0);
-          }
-          50% {
-            transform: translate(15px, -15px);
-          }
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(15px, -15px); }
         }
         .grid-bg {
           position: fixed;
@@ -271,9 +414,7 @@ export default function LoginPage() {
           font-weight: 700;
           letter-spacing: -0.5px;
         }
-        .logo-name span {
-          color: #6366f1;
-        }
+        .logo-name span { color: #6366f1; }
         .back-btn {
           background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(255, 255, 255, 0.12);
@@ -282,6 +423,7 @@ export default function LoginPage() {
           border-radius: 8px;
           font-size: 13px;
           cursor: pointer;
+          text-decoration: none;
         }
         .main {
           flex: 1;
@@ -318,16 +460,8 @@ export default function LoginPage() {
           margin-bottom: 40px;
           max-width: 380px;
         }
-        .stat-list {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .stat-item {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-        }
+        .stat-list { display: flex; flex-direction: column; gap: 16px; }
+        .stat-item { display: flex; align-items: center; gap: 14px; }
         .stat-icon {
           width: 40px;
           height: 40px;
@@ -338,16 +472,8 @@ export default function LoginPage() {
           font-size: 18px;
           flex-shrink: 0;
         }
-        .stat-text {
-          font-size: 13px;
-          color: rgba(255, 255, 255, 0.5);
-        }
-        .stat-text strong {
-          color: #fff;
-          display: block;
-          font-size: 14px;
-          margin-bottom: 1px;
-        }
+        .stat-text { font-size: 13px; color: rgba(255, 255, 255, 0.5); }
+        .stat-text strong { color: #fff; display: block; font-size: 14px; margin-bottom: 1px; }
         .right {
           width: 480px;
           display: flex;
@@ -355,17 +481,8 @@ export default function LoginPage() {
           justify-content: center;
           padding: 60px 64px;
         }
-        .form-title {
-          font-size: 26px;
-          font-weight: 700;
-          letter-spacing: -1px;
-          margin-bottom: 6px;
-        }
-        .form-sub {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.4);
-          margin-bottom: 32px;
-        }
+        .form-title { font-size: 26px; font-weight: 700; letter-spacing: -1px; margin-bottom: 6px; }
+        .form-sub { font-size: 14px; color: rgba(255, 255, 255, 0.4); margin-bottom: 32px; }
         .tabs {
           display: flex;
           background: rgba(255, 255, 255, 0.04);
@@ -392,9 +509,16 @@ export default function LoginPage() {
           color: #fff;
           box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
-        .field {
-          margin-bottom: 18px;
+        .error-msg {
+          background: rgba(239, 68, 68, 0.1);
+          border: 0.5px solid rgba(239, 68, 68, 0.3);
+          color: #f87171;
+          padding: 10px 14px;
+          border-radius: 10px;
+          font-size: 13px;
+          margin-bottom: 16px;
         }
+        .field { margin-bottom: 18px; }
         .field label {
           font-size: 11px;
           color: rgba(255, 255, 255, 0.4);
@@ -418,9 +542,7 @@ export default function LoginPage() {
           border-color: #6366f1;
           box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
-        .field input::placeholder {
-          color: rgba(255, 255, 255, 0.2);
-        }
+        .field input::placeholder { color: rgba(255, 255, 255, 0.2); }
         .submit-btn {
           width: 100%;
           background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -437,31 +559,20 @@ export default function LoginPage() {
           position: relative;
           overflow: hidden;
         }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .submit-btn::before {
           content: "";
           position: absolute;
           inset: 0;
           background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
         }
-        .submit-btn:hover {
+        .submit-btn:not(:disabled):hover {
           transform: translateY(-2px);
           box-shadow: 0 0 50px rgba(99, 102, 241, 0.55);
         }
-        .divider {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin: 20px 0;
-        }
-        .divider-line {
-          flex: 1;
-          height: 0.5px;
-          background: rgba(255, 255, 255, 0.07);
-        }
-        .divider-text {
-          font-size: 11px;
-          color: rgba(255, 255, 255, 0.25);
-        }
+        .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+        .divider-line { flex: 1; height: 0.5px; background: rgba(255, 255, 255, 0.07); }
+        .divider-text { font-size: 11px; color: rgba(255, 255, 255, 0.25); }
         .google-btn {
           width: 100%;
           background: rgba(255, 255, 255, 0.04);
@@ -477,9 +588,7 @@ export default function LoginPage() {
           gap: 10px;
           transition: all 0.2s;
         }
-        .google-btn:hover {
-          background: rgba(255, 255, 255, 0.08);
-        }
+        .google-btn:hover { background: rgba(255, 255, 255, 0.08); }
         .disclaimer {
           margin-top: 24px;
           font-size: 11px;
@@ -487,32 +596,27 @@ export default function LoginPage() {
           text-align: center;
           line-height: 1.6;
         }
-        .disclaimer span {
-          color: rgba(255, 255, 255, 0.35);
-        }
+        .disclaimer span { color: rgba(255, 255, 255, 0.35); }
+        .forgot-link { text-align: right; margin-top: -10px; margin-bottom: 16px; }
+        .forgot-link button { background: none; border: none; color: rgba(255,255,255,0.35); font-size: 12px; cursor: pointer; }
+        .forgot-link button:hover { color: #818cf8; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+        .modal { background: #0f0f0f; border: 0.5px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 28px; width: 100%; max-width: 400px; }
+        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .modal-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 20px; line-height: 1.6; }
+        .modal-error { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); color: #f87171; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+        .modal-success { color: #34d399; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+        .reset-token-box { background: rgba(99,102,241,0.08); border: 0.5px solid rgba(99,102,241,0.25); border-radius: 10px; padding: 12px 16px; font-family: monospace; font-size: 12px; color: #a5b4fc; word-break: break-all; margin-bottom: 16px; }
+        .modal-close { width: 100%; background: transparent; border: 0.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); padding: 10px; border-radius: 10px; font-size: 13px; cursor: pointer; margin-top: 10px; }
 
         @media (max-width: 1120px) {
-          .left {
-            padding: 48px 44px;
-          }
-          .right {
-            width: 430px;
-            padding: 48px 36px;
-          }
+          .left { padding: 48px 44px; }
+          .right { width: 430px; padding: 48px 36px; }
         }
         @media (max-width: 900px) {
-          .nav {
-            padding: 16px 20px;
-          }
-          .left {
-            display: none;
-          }
-          .right {
-            width: 100%;
-            max-width: 560px;
-            margin: 0 auto;
-            padding: 34px 20px 42px;
-          }
+          .nav { padding: 16px 20px; }
+          .left { display: none; }
+          .right { width: 100%; max-width: 560px; margin: 0 auto; padding: 34px 20px 42px; }
         }
       `}</style>
     </div>

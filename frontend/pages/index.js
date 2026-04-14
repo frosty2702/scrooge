@@ -6,6 +6,11 @@ export default function Home() {
   const [counts, setCounts] = useState({ c1: 0, c2: 0, c3: 0, c4: 0 });
   const [started, setStarted] = useState(false);
   const [activeDashNav, setActiveDashNav] = useState("Dashboard");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
+  }, []);
   const statsRef = useRef(null);
   const chartRef = useRef(null);
   const canvasRef = useRef(null);
@@ -109,13 +114,19 @@ export default function Home() {
           <div className="logo-name">Scrooge<span>.</span>ai</div>
         </div>
         <div className="nav-center">
-          <button className="nav-link" type="button">How it works</button>
-          <button className="nav-link" type="button">Performance</button>
-          <button className="nav-link" type="button">XAI</button>
+          <button className="nav-link" type="button" onClick={() => router.push("/simulate")}>How it works</button>
+          <button className="nav-link" type="button" onClick={() => router.push("/dashboard")}>Performance</button>
+          <button className="nav-link" type="button" onClick={() => router.push("/ai-decisions")}>XAI</button>
         </div>
         <div className="nav-right">
-          <button className="nav-btn" onClick={() => router.push("/login")} type="button">Sign in</button>
-          <button className="nav-btn nav-btn-primary" onClick={() => router.push("/login")} type="button">Get started</button>
+          {isLoggedIn ? (
+            <button className="nav-btn nav-btn-primary" onClick={() => router.push("/dashboard")} type="button">Go to Dashboard →</button>
+          ) : (
+            <>
+              <button className="nav-btn" onClick={() => router.push("/login")} type="button">Sign in</button>
+              <button className="nav-btn nav-btn-primary" onClick={() => router.push("/login")} type="button">Get started</button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -317,10 +328,31 @@ export default function Home() {
           .metrics-row { grid-template-columns: 1fr 1fr; }
           .charts-row { grid-template-columns: 1fr; }
         }
+        @media (max-width: 768px) {
+          .hero { padding: 100px 20px 60px; }
+          .hero-title { font-size: 36px; letter-spacing: -1px; line-height: 1.2; }
+          .hero-sub { font-size: 14px; max-width: 100%; margin-bottom: 32px; }
+          .stats { flex-direction: column; gap: 20px; margin-bottom: 60px; }
+          .stat { flex-direction: column; }
+          .stat-divider { display: none; }
+          .cta-row { flex-direction: column; gap: 10px; }
+          .btn-primary, .btn-secondary { width: 100%; }
+          .badge { font-size: 11px; }
+          .features-grid { grid-template-columns: 1fr; }
+          .metrics-row { grid-template-columns: repeat(2, 1fr); }
+          .charts-row { grid-template-columns: 1fr; }
+          .dashboard-preview { padding: 0 20px 60px; }
+          .footer { padding: 20px 20px; }
+        }
         @media (max-width: 520px) {
           .metrics-row { grid-template-columns: 1fr; }
           .nav-right { gap: 6px; }
           .nav-btn { padding: 7px 12px; font-size: 12px; }
+          .hero { padding: 80px 16px 40px; }
+          .hero-title { font-size: 28px; }
+          .hero-sub { font-size: 13px; }
+          .badge { padding: 5px 12px; font-size: 10px; }
+          .dashboard-preview { padding: 0 16px 40px; }
         }
       `}</style>
     </div>

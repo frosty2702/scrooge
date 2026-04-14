@@ -1,32 +1,43 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import Sidebar from "../components/Sidebar";
+import { API, getToken, fetchComparison } from "../lib/api";
+import { explainInPlainEnglish } from "../lib/explain";
+
+const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function SimulatePage() {
-  const [selectedPeriod, setSelectedPeriod] = useState("1year");
+  const router = useRouter();
+  const [months, setMonths] = useState("12");
+  const [amount, setAmount] = useState("10000");
+  const [comparison, setComparison] = useState(null);
   const [running, setRunning] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState("");
   const chartCanvasRef = useRef(null);
   const chartRef = useRef(null);
-  const router = useRouter();
 
+  // Auth guard
   useEffect(() => {
-    if (!showResults) return;
+    if (!getToken()) router.replace("/login");
+    fetchComparison().then(d => { if (!d?.error) setComparison(d); });
+  }, []);
+
+  // ── Chart ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!results) return;
     let active = true;
     import("chart.js/auto").then(({ default: Chart }) => {
       if (!active || !chartCanvasRef.current) return;
       if (chartRef.current) chartRef.current.destroy();
-      const weeks = Array.from({ length: 52 }, (_, i) => `W${i + 1}`);
-      const data = [
-        10000, 10075, 10120, 10190, 10255, 10310, 10365, 10420, 10495, 10540, 10480, 10525, 10590,
-        10610, 10655, 10720, 10680, 10740, 10810, 10865, 10810, 10890, 10930, 10885, 10960, 11010,
-        11055, 11020, 11070, 11120, 11180, 11220, 11165, 11235, 11290, 11350, 11310, 11370, 11420,
-        11485, 11430, 11495, 11560, 11620, 11595, 11640, 11695, 11720, 11680, 11630, 11580, 11106,
-      ];
+
+      const labels = results.decisions.map((d) => d.date.slice(0, 10));
+      const data = results.decisions.map((d) => d.capital);
 
       chartRef.current = new Chart(chartCanvasRef.current, {
         type: "line",
         data: {
-          labels: weeks,
+          labels,
           datasets: [
             {
               data,
@@ -61,77 +72,178 @@ export default function SimulatePage() {
       active = false;
       if (chartRef.current) chartRef.current.destroy();
     };
-  }, [showResults]);
+  }, [results]);
 
-  const runSim = () => {
-    setShowResults(false);
+  // ── Simulation ─────────────────────────────────────────────────────────────
+  const runSim = async () => {
+    setResults(null);
+    setError("");
+
+    const numMonths = parseInt(months) || 12;
+    if (numMonths < 1 || numMonths > 120) {
+      setError("Please enter a number of months between 1 and 120");
+      return;
+    }
+
     setRunning(true);
-    setTimeout(() => {
+
+    const numAmount = parseFloat(amount) || 10000;
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    try {
+      const res = await fetch(`${API}/api/simulate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ amount: numAmount, months: numMonths }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail || "Simulation failed");
+        return;
+      }
+      setResults(data);
+      localStorage.setItem("lastSimulation", JSON.stringify(data));
+    } catch {
+      setError("Network error. Is the backend running on port 8000?");
+    } finally {
       setRunning(false);
-      setShowResults(true);
-    }, 2200);
+    }
   };
+
+  // ── Derived values from results ────────────────────────────────────────────
+  const lastDecision = results?.decisions?.[results.decisions.length - 1];
+  const weights = lastDecision?.weights || [];
+  const assetNames = results?.asset_names || [];
+
+  // Aggregate feature importance across all decisions
+  const aggImportance = (() => {
+    if (!results?.decisions?.length) return [];
+    const totals = {};
+    let count = 0;
+    results.decisions.forEach((d) => {
+      if (!d.feature_importance) return;
+      Object.entries(d.feature_importance).forEach(([k, v]) => {
+        totals[k] = (totals[k] || 0) + v;
+      });
+      count++;
+    });
+    if (count === 0) return [];
+    const sum = Object.values(totals).reduce((a, b) => a + b, 0);
+    return Object.entries(totals)
+      .map(([k, v]) => ({ name: k, pct: Math.round((v / sum) * 100) }))
+      .sort((a, b) => b.pct - a.pct);
+  })();
+
+  const topFeature = aggImportance[0]?.name || "returns";
+  const topPct = aggImportance[0]?.pct || 0;
+
+  const fmt = (n) => `₹${Number(n.toFixed(0)).toLocaleString("en-IN")}`;
+  const numMonths = parseInt(months) || 12;
+  const tradingDays = numMonths * 21;
+  const periodLabel = numMonths >= 12
+    ? `${Math.floor(numMonths / 12)} Year${Math.floor(numMonths / 12) > 1 ? "s" : ""}${numMonths % 12 > 0 ? ` ${numMonths % 12} Mo` : ""}`
+    : `${numMonths} Month${numMonths > 1 ? "s" : ""}`;
 
   return (
     <div className="page">
       <div className="orb orb1" />
       <div className="orb orb2" />
-      <div className="disclaimer">⚠ Simulation only — no real investments are made. Past performance does not guarantee future results.</div>
+      <div className="disclaimer">
+        ⚠ Simulation only — no real investments are made. Past performance does not guarantee future results.
+      </div>
       <div className="app">
-        <div className="sidebar">
-          <button className="sidebar-logo" onClick={() => router.push("/dashboard")} type="button">
-            <div className="sidebar-logo-mark">S</div>
-            <div className="sidebar-logo-name">Scrooge<span>.</span>ai</div>
-          </button>
-          <button className="nav-item" onClick={() => router.push("/dashboard")} type="button"><span>📊</span> Dashboard</button>
-          <div className="nav-item active"><span>🤖</span> Simulate</div>
-          <div className="nav-item"><span>🧠</span> AI Decisions</div>
-          <div className="nav-item"><span>📈</span> Portfolio</div>
-          <div className="nav-item"><span>🔍</span> XAI Insights</div>
-          <div className="nav-item"><span>📋</span> Decision Log</div>
-          <div className="nav-item"><span>📄</span> Reports</div>
-          <div className="nav-item"><span>⚙️</span> Settings</div>
-        </div>
+        <Sidebar active="Simulate" />
+
         <div className="main">
           <div className="page-title">Run a Simulation</div>
-          <div className="page-sub">Let the AI agent simulate your investment across 4 asset classes</div>
+          <div className="page-sub">Let the AI agent simulate your investment across {assetNames.length || 4} asset classes</div>
+
           <div className="sim-input-card">
             <div className="input-row">
               <div className="field-group">
-                <label>Investment Amount</label>
-                <input className="amount-input" type="text" defaultValue="₹10,000" id="amountInput" />
+                <label>Investment Amount (₹)</label>
+                <input
+                  className="amount-input"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="10000"
+                  min="100"
+                />
               </div>
               <div className="field-group">
-                <label>Time Horizon</label>
-                <div className="period-toggle">
-                  <button className={`period-btn ${selectedPeriod === "6months" ? "active" : ""}`} onClick={() => setSelectedPeriod("6months")} type="button">6 Months</button>
-                  <button className={`period-btn ${selectedPeriod === "1year" ? "active" : ""}`} onClick={() => setSelectedPeriod("1year")} type="button">1 Year</button>
-                </div>
+                <label>Time Horizon
+                  {months && parseInt(months) > 0 && (
+                    <span className="horizon-hint">
+                      {" "}— {parseInt(months) >= 12
+                        ? `${Math.floor(parseInt(months) / 12)} yr${Math.floor(parseInt(months) / 12) > 1 ? "s" : ""}${parseInt(months) % 12 > 0 ? ` ${parseInt(months) % 12} mo` : ""}`
+                        : `${months} month${parseInt(months) > 1 ? "s" : ""}`}
+                    </span>
+                  )}
+                </label>
+                <input
+                  className="amount-input"
+                  type="number"
+                  value={months}
+                  onChange={(e) => setMonths(e.target.value)}
+                  placeholder="12"
+                  min="1"
+                  max="120"
+                />
               </div>
-              <button className={`run-btn ${running ? "loading" : ""}`} onClick={runSim} type="button">Simulate Now</button>
+              <button className={`run-btn ${running ? "loading" : ""}`} onClick={runSim} type="button" disabled={running}>
+                {running ? "Running…" : "Simulate Now"}
+              </button>
             </div>
           </div>
+
+          {error && <div className="error-msg">⚠ {error}</div>}
 
           {running && (
             <div className="loading-state">
               <div className="loading-spinner" />
               <div className="loading-text">AI agent is making decisions...</div>
-              <div className="loading-sub">Analyzing 17 years of market data</div>
+              <div className="loading-sub">Running {tradingDays} trading days of simulation</div>
             </div>
           )}
 
-          {showResults && (
+          {results && (
             <div className="results">
               <div className="results-header">
-                <div className="results-title">Simulation Results — 1 Year</div>
-                <div className="results-time">Simulated on historical data · 252 trading days</div>
+                <div className="results-title">Simulation Results — {periodLabel}</div>
+                <div className="results-time">
+                  {results.decisions[0]?.date.slice(0, 10)} → {lastDecision?.date.slice(0, 10)} · {tradingDays} trading days
+                </div>
               </div>
+
               <div className="metrics-row">
-                <div className="metric" style={{ animationDelay: "0s" }}><div className="metric-label">Final Value</div><div className="metric-value green">₹11,106</div><div className="metric-sub">Started with ₹10,000</div></div>
-                <div className="metric" style={{ animationDelay: "0.05s" }}><div className="metric-label">Annual Return</div><div className="metric-value green">+11.06%</div><div className="metric-sub">vs 10% market average</div></div>
-                <div className="metric" style={{ animationDelay: "0.1s" }}><div className="metric-label">Sharpe Ratio</div><div className="metric-value blue">1.39</div><div className="metric-sub">Risk-adjusted return</div></div>
-                <div className="metric" style={{ animationDelay: "0.15s" }}><div className="metric-label">Max Drawdown</div><div className="metric-value amber">-6.03%</div><div className="metric-sub">Worst loss period</div></div>
+                <div className="metric" style={{ animationDelay: "0s" }}>
+                  <div className="metric-label">Final Value</div>
+                  <div className="metric-value green">{fmt(results.final_amount)}</div>
+                  <div className="metric-sub">Started with {fmt(results.initial_amount)}</div>
+                </div>
+                <div className="metric" style={{ animationDelay: "0.05s" }}>
+                  <div className="metric-label">Total Return</div>
+                  <div className={`metric-value ${results.total_return_pct >= 0 ? "green" : "red"}`}>
+                    {results.total_return_pct >= 0 ? "+" : ""}{results.total_return_pct.toFixed(2)}%
+                  </div>
+                  <div className="metric-sub">Over {periodLabel.toLowerCase()}</div>
+                </div>
+                <div className="metric" style={{ animationDelay: "0.1s" }}>
+                  <div className="metric-label">Sharpe Ratio</div>
+                  <div className="metric-value blue">{results.metrics.sharpe.toFixed(2)}</div>
+                  <div className="metric-sub">Risk-adjusted return</div>
+                </div>
+                <div className="metric" style={{ animationDelay: "0.15s" }}>
+                  <div className="metric-label">Max Drawdown</div>
+                  <div className="metric-value amber">{results.metrics.max_drawdown.toFixed(2)}%</div>
+                  <div className="metric-sub">Worst loss period</div>
+                </div>
               </div>
+
               <div className="charts-row">
                 <div className="card">
                   <div className="card-title">Capital Growth Curve</div>
@@ -140,40 +252,86 @@ export default function SimulatePage() {
                 </div>
                 <div className="card">
                   <div className="card-title">Asset Allocation</div>
-                  <div className="card-sub">How the AI distributed your money</div>
-                  <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#6366f1" }} />Bond</div><div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "43%", background: "#6366f1" }} /></div><div className="alloc-pct blue">43%</div></div></div>
-                  <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#34d399" }} />Equity</div><div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "34%", background: "#34d399" }} /></div><div className="alloc-pct green">34%</div></div></div>
-                  <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#fbbf24" }} />Defensive</div><div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "23%", background: "#fbbf24" }} /></div><div className="alloc-pct amber">23%</div></div></div>
-                  <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "rgba(255,255,255,0.15)" }} />Commodity</div><div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "0%" }} /></div><div className="alloc-pct" style={{ color: "rgba(255,255,255,0.2)" }}>0%</div></div></div>
+                  <div className="card-sub">Final weights from AI agent</div>
+                  {assetNames.map((name, i) => (
+                    <div className="alloc-item" key={name}>
+                      <div className="alloc-left">
+                        <div className="alloc-dot" style={{ background: ASSET_COLORS[i] }} />
+                        {name}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div className="alloc-bar-bg">
+                          <div className="alloc-bar" style={{ width: `${((weights[i] || 0) * 100).toFixed(0)}%`, background: ASSET_COLORS[i] }} />
+                        </div>
+                        <div className="alloc-pct" style={{ color: ASSET_COLORS[i] }}>
+                          {((weights[i] || 0) * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
               <div className="charts-row">
                 <div className="card xai-card">
                   <div className="card-title">Why did the AI make these decisions?</div>
                   <div className="card-sub">Perturbation-based feature importance across all decisions</div>
-                  <div className="xai-explain"><strong>AI Explanation:</strong> The agent primarily responded to strong recent returns (49%) and moderate volatility (26%). The momentum indicator (MA ratio) confirmed a bullish trend. Market regime was stable throughout the simulation period, requiring no defensive reallocation.</div>
-                  <div className="imp-row"><div className="imp-label">Returns</div><div className="imp-bar-bg"><div className="imp-bar" style={{ width: "49%", background: "#6366f1" }} /></div><div className="imp-pct">49%</div></div>
-                  <div className="imp-row"><div className="imp-label">Volatility</div><div className="imp-bar-bg"><div className="imp-bar" style={{ width: "26%", background: "#8b5cf6" }} /></div><div className="imp-pct">26%</div></div>
-                  <div className="imp-row"><div className="imp-label">Momentum</div><div className="imp-bar-bg"><div className="imp-bar" style={{ width: "20%", background: "#34d399" }} /></div><div className="imp-pct">20%</div></div>
-                  <div className="imp-row"><div className="imp-label">Regime</div><div className="imp-bar-bg"><div className="imp-bar" style={{ width: "5%", background: "#fbbf24" }} /></div><div className="imp-pct">5%</div></div>
+                  <div className="xai-explain">
+                    <div className="xai-label">What did the AI focus on?</div>
+                    {explainInPlainEnglish(aggImportance, results.metrics, results.total_return_pct)}
+                  </div>
+                  {aggImportance.map((feat, i) => (
+                    <div className="imp-row" key={feat.name}>
+                      <div className="imp-label">{feat.name.charAt(0).toUpperCase() + feat.name.slice(1)}</div>
+                      <div className="imp-bar-bg">
+                        <div className="imp-bar" style={{ width: `${feat.pct}%`, background: ASSET_COLORS[i] }} />
+                      </div>
+                      <div className="imp-pct">{feat.pct}%</div>
+                    </div>
+                  ))}
                 </div>
                 <div className="card comparison-card">
                   <div className="card-title">Strategy Comparison</div>
                   <div className="card-sub">PPO Agent vs classical strategies (17 years)</div>
                   <table className="comp-table">
-                    <thead><tr><th>Strategy</th><th>Return</th><th>Sharpe</th><th>Drawdown</th></tr></thead>
+                    <thead>
+                      <tr><th>Strategy</th><th>Return</th><th>Sharpe</th><th>Drawdown</th></tr>
+                    </thead>
                     <tbody>
-                      <tr><td>Equal Weight</td><td className="green">301%</td><td>1.13</td><td className="red">-17%</td></tr>
-                      <tr><td>Mean Variance</td><td className="amber">123%</td><td>0.61</td><td className="red">-19%</td></tr>
-                      <tr className="highlight"><td>PPO Agent<span className="ai-badge">AI</span></td><td className="green">280%</td><td className="blue">1.04</td><td className="amber">-18.6%</td></tr>
+                      {(comparison?.strategies || []).map((s, i) => (
+                        <tr key={s.name} className={s.name === "PPO Agent" ? "highlight" : ""}>
+                          <td>
+                            {s.name}
+                            {s.name === "PPO Agent" && <span className="ai-badge">AI</span>}
+                          </td>
+                          <td className="green">+{s.total_return_pct.toFixed(2)}%</td>
+                          <td>{s.sharpe.toFixed(2)}</td>
+                          <td className="amber">{s.max_drawdown.toFixed(2)}%</td>
+                        </tr>
+                      ))}
+                      {(!comparison?.strategies || comparison.strategies.length === 0) && (
+                        <>
+                          <tr><td>Equal Weight</td><td className="green">301%</td><td>1.13</td><td className="red">-17%</td></tr>
+                          <tr><td>Mean Variance</td><td className="amber">123%</td><td>0.61</td><td className="red">-19%</td></tr>
+                          <tr className="highlight">
+                            <td>PPO Agent<span className="ai-badge">AI</span></td>
+                            <td className="green">280%</td>
+                            <td className="blue">1.04</td>
+                            <td className="amber">-18.6%</td>
+                          </tr>
+                        </>
+                      )}
                     </tbody>
                   </table>
-                  <div style={{ marginTop: "12px", fontSize: "11px", color: "rgba(255,255,255,0.3)" }}>PPO delivers 2.3x the return of Mean Variance</div>
+                  <div style={{ marginTop: "12px", fontSize: "11px", color: "rgba(255,255,255,0.3)" }}>
+                    This simulation: {results.total_return_pct >= 0 ? "+" : ""}{results.total_return_pct.toFixed(2)}% over {periodLabel.toLowerCase()}
+                  </div>
                 </div>
               </div>
+
               <div className="bottom-actions">
-                <button className="btn-outline" onClick={() => setShowResults(false)} type="button">Run another</button>
-                <button className="btn-outline" type="button">View AI decisions</button>
+                <button className="btn-outline" onClick={() => setResults(null)} type="button">Run another</button>
+                <button className="btn-outline" onClick={() => router.push("/ai-decisions")} type="button">View AI Decisions →</button>
                 <button className="btn-primary" type="button">Download report</button>
               </div>
             </div>
@@ -205,13 +363,12 @@ export default function SimulatePage() {
         .field-group label { font-size: 11px; color: rgba(255,255,255,0.35); display: block; margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
         .amount-input { width: 100%; background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 18px; font-size: 20px; font-weight: 700; color: #fff; outline: none; letter-spacing: -0.5px; transition: border-color 0.2s; }
         .amount-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
-        .period-toggle { display: flex; background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; }
-        .period-btn { flex: 1; padding: 11px 16px; border-radius: 9px; font-size: 14px; font-weight: 500; border: none; background: transparent; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
-        .period-btn.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; box-shadow: 0 0 15px rgba(99,102,241,0.3); }
+        .horizon-hint { color: #818cf8; font-weight: 600; text-transform: none; letter-spacing: 0; }
         .run-btn { width: 100%; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 0 25px rgba(99,102,241,0.3); transition: all 0.3s; position: relative; overflow: hidden; }
         .run-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); }
-        .run-btn:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(99,102,241,0.5); }
-        .run-btn.loading { opacity: 0.7; }
+        .run-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(99,102,241,0.5); }
+        .run-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .error-msg { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.25); color: #f87171; padding: 12px 16px; border-radius: 12px; font-size: 13px; margin-bottom: 16px; }
         .loading-state { text-align: center; padding: 48px; }
         .loading-spinner { width: 48px; height: 48px; border: 2px solid rgba(99,102,241,0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -239,8 +396,8 @@ export default function SimulatePage() {
         .alloc-bar { height: 5px; border-radius: 3px; }
         .alloc-pct { font-size: 13px; font-weight: 600; width: 40px; text-align: right; }
         .xai-card { animation: fadeIn 0.4s 0.2s ease both; }
-        .xai-explain { background: rgba(99,102,241,0.06); border: 0.5px solid rgba(99,102,241,0.15); border-radius: 12px; padding: 14px; margin-bottom: 14px; font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.7; }
-        .xai-explain strong { color: #a5b4fc; }
+        .xai-explain { background: rgba(99,102,241,0.06); border: 0.5px solid rgba(99,102,241,0.15); border-radius: 12px; padding: 14px; margin-bottom: 14px; font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.8; }
+        .xai-label { font-size: 11px; font-weight: 600; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
         .imp-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; font-size: 12px; }
         .imp-label { width: 72px; color: rgba(255,255,255,0.4); }
         .imp-bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; }
@@ -262,6 +419,25 @@ export default function SimulatePage() {
           .input-row { grid-template-columns: 1fr; }
           .metrics-row { grid-template-columns: repeat(2,1fr); }
           .charts-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+          .input-row { grid-template-columns: 1fr; }
+          .metrics-row { grid-template-columns: repeat(2,1fr); }
+          .charts-row { grid-template-columns: 1fr; }
+          .bottom-actions { flex-direction: column; }
+          .bottom-actions button { width: 100%; }
+          .sim-input-card { padding: 20px; }
+          .run-btn { width: 100%; }
+          .main { padding: 16px; }
+        }
+        @media (max-width: 480px) {
+          .metrics-row { grid-template-columns: 1fr; }
+          .input-row { grid-template-columns: 1fr; }
+          .results-header { flex-direction: column; align-items: flex-start; }
+          .main { padding: 12px; }
+          .sim-input-card { padding: 16px; }
+          .page-title { font-size: 18px; }
+          .bottom-actions { gap: 8px; }
         }
         @media (max-width: 900px) {
           .app { flex-direction: column; }

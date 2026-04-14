@@ -1,7 +1,7 @@
 """
 FastAPI backend for portfolio simulation.
 """
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+import json
 from pathlib import Path
 
 import numpy as np
@@ -10,14 +10,9 @@ import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from stable_baselines3 import PPO
 
-from portfolio_optimization import (
-    equal_weight_portfolio,
-    load_and_prepare_data,
-    mean_variance_portfolio,
-)
 from src.decision_logger import DecisionLogger
+from src.dirichlet_policy import DirichletPolicy, DirichletPPO
 from src.explainability import compute_aggregate_feature_importance, get_explanation_data
 from trading_env import TradingEnv
 
@@ -76,7 +71,11 @@ def simulate(request: SimulateRequest):
     env.portfolio_value = 1.0
     env.prev_weights = np.ones(env.n_assets) / env.n_assets
 
-    model = PPO.load(MODEL_PATH)
+    # Fixed: use DirichletPPO to load the model correctly
+    model = DirichletPPO.load(
+        MODEL_PATH,
+        custom_objects={"policy_class": DirichletPolicy}
+    )
     model.policy.set_training_mode(False)
 
     log_path = Path("results/api_simulate_log.csv")
@@ -170,90 +169,16 @@ def simulate(request: SimulateRequest):
     }
 
 
-def _compute_metrics_from_returns(returns: np.ndarray) -> dict:
-    """Compute total_return_pct, sharpe, volatility, max_drawdown from return series."""
-    returns = np.asarray(returns)
-    returns = returns[~np.isnan(returns)]
-    if len(returns) < 2:
-        return {"total_return_pct": 0.0, "sharpe": 0.0, "volatility": 0.0, "max_drawdown": 0.0}
-    cum = np.cumprod(1 + returns)
-    total_return_pct = float((cum[-1] - 1) * 100)
-    volatility = float(np.std(returns) * np.sqrt(252) * 100)
-    sharpe = float(np.mean(returns) / (np.std(returns) + 1e-8) * np.sqrt(252))
-    running_max = np.maximum.accumulate(cum)
-    drawdowns = (cum / running_max) - 1
-    max_drawdown = float(np.min(drawdowns) * 100)
-    return {
-        "total_return_pct": total_return_pct,
-        "sharpe": sharpe,
-        "volatility": volatility,
-        "max_drawdown": max_drawdown,
-    }
-
-
-_CACHED_MV_METRICS = None
-
-
 @app.get("/api/comparison")
 def comparison():
-    returns_df = load_and_prepare_data(DATA_PATH)
-
-    eq_metrics = equal_weight_portfolio(returns_df)
-    eq_ret_metrics = _compute_metrics_from_returns(eq_metrics["returns"].values)
-
-    global _CACHED_MV_METRICS
-    mv_metrics_result = None
-    try:
-        with ThreadPoolExecutor(max_workers=1) as ex:
-            future = ex.submit(mean_variance_portfolio, returns_df, 60, 1.0)
-            mv_metrics_result = future.result(timeout=30)
-        _CACHED_MV_METRICS = mv_metrics_result
-    except FuturesTimeoutError:
-        if _CACHED_MV_METRICS is not None:
-            mv_metrics_result = _CACHED_MV_METRICS
-        else:
-            mv_metrics_result = {
-                "returns": eq_metrics["returns"],
-                "cumulative_returns": eq_metrics["cumulative_returns"],
-            }
-
-    mv_ret_metrics = _compute_metrics_from_returns(mv_metrics_result["returns"].values)
-
-    ppo_log_path = Path("results/decision_log.csv")
-    if ppo_log_path.exists():
-        ppo_df = pd.read_csv(ppo_log_path)
-        if "portfolio_return" in ppo_df.columns:
-            ppo_returns = ppo_df["portfolio_return"].values
-            ppo_ret_metrics = _compute_metrics_from_returns(ppo_returns)
-        else:
-            ppo_ret_metrics = {"total_return_pct": 0.0, "sharpe": 0.0, "volatility": 0.0, "max_drawdown": 0.0}
-    else:
-        ppo_ret_metrics = {"total_return_pct": 0.0, "sharpe": 0.0, "volatility": 0.0, "max_drawdown": 0.0}
-
-    strategies = [
-        {
-            "name": "Equal Weight",
-            "total_return_pct": eq_ret_metrics["total_return_pct"],
-            "sharpe": eq_ret_metrics["sharpe"],
-            "volatility": eq_ret_metrics["volatility"],
-            "max_drawdown": eq_ret_metrics["max_drawdown"],
-        },
-        {
-            "name": "Mean Variance",
-            "total_return_pct": mv_ret_metrics["total_return_pct"],
-            "sharpe": mv_ret_metrics["sharpe"],
-            "volatility": mv_ret_metrics["volatility"],
-            "max_drawdown": mv_ret_metrics["max_drawdown"],
-        },
-        {
-            "name": "PPO Agent",
-            "total_return_pct": ppo_ret_metrics["total_return_pct"],
-            "sharpe": ppo_ret_metrics["sharpe"],
-            "volatility": ppo_ret_metrics["volatility"],
-            "max_drawdown": ppo_ret_metrics["max_drawdown"],
-        },
-    ]
-    return {"strategies": strategies}
+    cache_path = Path("results/comparison_cache.json")
+    if not cache_path.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="Cache not found. Run: python src/precompute.py"
+        )
+    with open(cache_path) as f:
+        return json.load(f)
 
 
 @app.get("/api/portfolio-history")
@@ -276,5 +201,4 @@ def portfolio_history():
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -48,7 +48,7 @@ export default function Sidebar({ active }) {
   const sidebarContent = (
     <div className="sidebar-inner">
       <div className="logo-row">
-        <div className="logo-mark">S</div>
+        <img src="/scroogeailogo.png" alt="Scrooge.ai" className="logo-mark" />
         <div className="logo-name">Scrooge<span>.</span>ai</div>
         {/* Close button on mobile */}
         <button className="close-btn" onClick={() => setOpen(false)} type="button" aria-label="Close menu">✕</button>
@@ -84,7 +84,7 @@ export default function Sidebar({ active }) {
           <span /><span /><span />
         </button>
         <div className="mobile-logo">
-          <div className="logo-mark-sm">S</div>
+          <img src="/scroogeailogo.png" alt="Scrooge.ai" className="logo-mark-sm" />
           <div className="logo-name-sm">Scrooge<span>.</span>ai</div>
         </div>
         <div className="mobile-avatar" onClick={() => router.push("/settings")}>{initials}</div>
@@ -108,7 +108,7 @@ export default function Sidebar({ active }) {
         .sidebar { width: 220px; min-width: 220px; border-right: 0.5px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); flex-shrink: 0; min-height: 100vh; }
         .sidebar-inner { display: flex; flex-direction: column; gap: 2px; padding: 20px 12px; height: 100%; }
         .logo-row { display: flex; align-items: center; gap: 9px; padding: 10px 12px; margin-bottom: 16px; }
-        .logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; box-shadow: 0 0 12px rgba(99,102,241,0.3); flex-shrink: 0; }
+        .logo-mark { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; box-shadow: 0 0 12px rgba(99,102,241,0.3); }
         .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; color: #fff; flex: 1; }
         .logo-name span { color: #6366f1; }
         .close-btn { display: none; background: transparent; border: none; color: rgba(255,255,255,0.4); font-size: 18px; cursor: pointer; padding: 4px; line-height: 1; margin-left: auto; }
@@ -131,7 +131,7 @@ export default function Sidebar({ active }) {
         .hamburger { background: transparent; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 6px; }
         .hamburger span { display: block; width: 22px; height: 1.5px; background: rgba(255,255,255,0.7); border-radius: 2px; transition: all 0.2s; }
         .mobile-logo { display: flex; align-items: center; gap: 8px; }
-        .logo-mark-sm { width: 26px; height: 26px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+        .logo-mark-sm { width: 26px; height: 26px; border-radius: 7px; object-fit: cover; }
         .logo-name-sm { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
         .logo-name-sm span { color: #6366f1; }
         .mobile-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; }

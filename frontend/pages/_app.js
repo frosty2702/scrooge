@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "@/styles/globals.css";
 
-const API = "http://localhost:8000";
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function App({ Component, pageProps }) {
   const [offline, setOffline] = useState(false);

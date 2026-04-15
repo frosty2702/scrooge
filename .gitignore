@@ -5,3 +5,8 @@ node_modules/
 .next/
 frontend/node_modules/
 frontend/.next/
+frontend/.env.local
+scrooge.db
+*.pyc
+logs/
+

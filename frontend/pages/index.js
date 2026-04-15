@@ -110,7 +110,7 @@ export default function Home() {
 
       <nav className="nav">
         <div className="logo">
-          <div className="logo-mark">S</div>
+          <img src="/scroogeailogo.png" alt="Scrooge.ai" className="logo-mark" />
           <div className="logo-name">Scrooge<span>.</span>ai</div>
         </div>
         <div className="nav-center">
@@ -162,7 +162,7 @@ export default function Home() {
           <div className="dash-layout">
             <div className="dash-sidebar">
               <div className="dash-logo">
-                <div className="dash-logo-mark">S</div>
+                <img src="/scroogeailogo.png" alt="Scrooge.ai" className="dash-logo-mark" />
                 <div className="dash-logo-name">Scrooge.ai</div>
               </div>
               {["Dashboard", "Simulate", "AI Decisions", "XAI Insights", "Decision Log", "Reports"].map((item) => (
@@ -243,7 +243,7 @@ export default function Home() {
         @keyframes float3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(15px,-25px) scale(1.03)} }
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: rgba(0,0,0,0.4); backdrop-filter: blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.06); }
         .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; box-shadow: 0 0 20px rgba(99,102,241,0.5); }
+        .logo-mark { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; box-shadow: 0 0 20px rgba(99,102,241,0.5); }
         .logo-name { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: #fff; } .logo-name span { color: #6366f1; }
         .nav-center { display: flex; gap: 4px; } .nav-link { padding: 7px 16px; border-radius: 8px; font-size: 13px; color: rgba(255,255,255,0.5); cursor: pointer; background: transparent; border: none; transition: all 0.2s; } .nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
         .nav-right { display: flex; gap: 10px; align-items: center; } .nav-btn { padding: 8px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.7); transition: all 0.2s; } .nav-btn:hover { background: rgba(255,255,255,0.08); }
@@ -271,7 +271,7 @@ export default function Home() {
         .dash-layout { display: grid; grid-template-columns: 180px 1fr; min-height: 380px; }
         .dash-sidebar { background: rgba(0,0,0,0.3); border-right: 0.5px solid rgba(255,255,255,0.04); padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; }
         .dash-logo { display: flex; align-items: center; gap: 7px; padding: 8px 10px; margin-bottom: 12px; }
-        .dash-logo-mark { width: 24px; height: 24px; background: linear-gradient(135deg,#6366f1,#8b5cf6); border-radius: 6px; display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700; }
+        .dash-logo-mark { width: 24px; height: 24px; border-radius: 6px; object-fit: cover; }
         .dash-logo-name { font-size: 13px; font-weight: 700; letter-spacing: -0.3px; }
         .dash-nav { display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:11px;color:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.2s; background: transparent; border: none; width: 100%; text-align: left; }
         .dash-nav:hover { background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6); }

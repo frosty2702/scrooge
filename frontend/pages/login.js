@@ -2,7 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const API = "http://localhost:8000";
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function LoginPage() {
   const [tab, setTab] = useState("login");
@@ -104,7 +104,7 @@ export default function LoginPage() {
 
       <nav className="nav">
         <div className="logo">
-          <div className="logo-mark">S</div>
+          <img src="/scroogeailogo.png" alt="Scrooge.ai" className="logo-mark" />
           <div className="logo-name">
             Scrooge<span>.</span>ai
           </div>
@@ -400,13 +400,8 @@ export default function LoginPage() {
         .logo-mark {
           width: 34px;
           height: 34px;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
           border-radius: 9px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 15px;
-          font-weight: 700;
+          object-fit: cover;
           box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
         .logo-name {

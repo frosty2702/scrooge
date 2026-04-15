@@ -1,4 +1,4 @@
-export const API = "http://localhost:8000";
+export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export function getToken() {
   if (typeof window === "undefined") return null;

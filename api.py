@@ -2,7 +2,7 @@
 FastAPI backend for portfolio simulation.
 """
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -25,6 +25,81 @@ from trading_env import TradingEnv
 # Seeds for determinism
 np.random.seed(42)
 torch.manual_seed(42)
+
+
+# ── Live data refresh ──────────────────────────────────────────────────────────
+
+def refresh_features_with_live_data(data_path: str = "data/features.csv") -> bool:
+    """
+    Fetch the latest NIFTY 50 data from Yahoo Finance and append any new rows
+    to features.csv using the same synthetic multi-asset pipeline as training.
+    Returns True if new data was appended, False if already up to date or failed.
+    """
+    try:
+        import yfinance as yf
+
+        existing = pd.read_csv(data_path)
+        existing["Date"] = pd.to_datetime(existing["Date"])
+        last_date = existing["Date"].max()
+
+        # Fetch from the day after the last known date
+        fetch_start = (last_date + timedelta(days=1)).strftime("%Y-%m-%d")
+        fetch_end   = (datetime.utcnow() + timedelta(days=1)).strftime("%Y-%m-%d")
+
+        if fetch_start >= fetch_end:
+            return False  # Already up to date
+
+        raw = yf.download("^NSEI", start=fetch_start, end=fetch_end,
+                          interval="1d", progress=False)
+        if raw.empty:
+            return False
+
+        if isinstance(raw.columns, pd.MultiIndex):
+            raw.columns = raw.columns.get_level_values(0)
+        raw.reset_index(inplace=True)
+        raw.columns = raw.columns.str.lower().str.replace(" ", "_")
+        raw.dropna(subset=["close"], inplace=True)
+        raw.sort_values("date", inplace=True)
+        raw["return"] = raw["close"].pct_change()
+        raw.dropna(subset=["return"], inplace=True)
+
+        if raw.empty:
+            return False
+
+        base  = raw["return"].values
+        dates = raw["date"].values
+        n     = len(base)
+
+        np.random.seed(int(pd.Timestamp(fetch_start).timestamp()) % (2**31))
+        new_assets = {
+            "Equity":    base * 1.0  + np.random.normal(0.0003,  0.008, n),
+            "Bond":      base * -0.1 + np.random.normal(0.00012, 0.003, n),
+            "Commodity": base * 0.2  + np.random.normal(0.0002,  0.006, n),
+            "Defensive": np.random.normal(0.00008, 0.002, n),
+        }
+
+        frames = []
+        for asset_name, rets in new_assets.items():
+            frames.append(pd.DataFrame({
+                "Date":   dates,
+                "Asset":  asset_name,
+                "Return": rets,
+            }))
+        new_rows = pd.concat(frames).reset_index(drop=True)
+        new_rows["Date"] = pd.to_datetime(new_rows["Date"]).dt.strftime("%Y-%m-%d")
+
+        updated = pd.concat([existing.assign(Date=existing["Date"].dt.strftime("%Y-%m-%d")),
+                             new_rows], ignore_index=True)
+        updated.to_csv(data_path, index=False)
+
+        new_days = raw["date"].nunique()
+        print(f"[live data] Appended {new_days} new trading day(s) up to {raw['date'].iloc[-1].date()}")
+        return True
+
+    except Exception as e:
+        # Never crash the simulation if live refresh fails — just use existing data
+        print(f"[live data] Refresh skipped: {e}")
+        return False
 
 app = FastAPI()
 app.add_middleware(
@@ -130,6 +205,9 @@ def simulate(
     db: Session = Depends(get_db),
     user_id: Optional[int] = Depends(get_current_user_id),
 ):
+    # Refresh features.csv with latest live market data before every simulation
+    refresh_features_with_live_data(DATA_PATH)
+
     amount = request.amount
     months = request.months
 
@@ -399,6 +477,23 @@ def update_me(
         "email": user.email,
         "risk_profile": user.risk_profile,
         "investment_goal": user.investment_goal,
+    }
+
+
+@app.get("/api/data-status")
+def data_status():
+    """Returns the current data coverage and triggers a live refresh."""
+    refreshed = refresh_features_with_live_data(DATA_PATH)
+    df = pd.read_csv(DATA_PATH)
+    df["Date"] = pd.to_datetime(df["Date"])
+    equity = df[df["Asset"] == "Equity"]
+    return {
+        "training_end": "2025-12-31",
+        "data_last_updated": str(equity["Date"].max().date()),
+        "total_trading_days": int(equity["Date"].nunique()),
+        "live_refresh_triggered": refreshed,
+        "data_source": "Yahoo Finance (^NSEI)",
+        "update_frequency": "Daily (end-of-day)",
     }
 
 

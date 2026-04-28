@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Sidebar from "../components/Sidebar";
 import { fetchLatestSimulation, fetchMarketRegime, fetchComparison, getToken, getUser } from "../lib/api";
 
-const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
+const ASSET_COLORS = ["#FFB700", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function DashboardPage() {
   const canvasRef = useRef(null);
@@ -70,8 +70,8 @@ export default function DashboardPage() {
           datasets: [
             {
               data: scroogeData,
-              borderColor: "#6366f1",
-              backgroundColor: "rgba(99,102,241,0.06)",
+              borderColor: "#FFB700",
+              backgroundColor: "rgba(255,183,0,0.06)",
               borderWidth: 2,
               pointRadius: 0,
               fill: true,
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                   <div className="conf-ring">
                     <svg width="88" height="88" viewBox="0 0 88 88">
                       <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
-                      <circle cx="44" cy="44" r="36" fill="none" stroke="#6366f1" strokeWidth="7"
+                      <circle cx="44" cy="44" r="36" fill="none" stroke="#FFB700" strokeWidth="7"
                         strokeDasharray="226"
                         strokeDashoffset={226 - (226 * aggImportance[0].pct) / 100}
                         strokeLinecap="round" />
@@ -281,7 +281,7 @@ export default function DashboardPage() {
               <div className="card-title">Portfolio vs Benchmark</div>
               <div className="card-sub">{sim ? "AI portfolio vs estimated 8% annualised benchmark" : "Run a simulation to see your portfolio performance"}</div>
               <div className="legend">
-                <span><span className="legend-dot" style={{ background: "#6366f1" }} />Scrooge AI ({sim ? simReturn : "—"})</span>
+                <span><span className="legend-dot" style={{ background: "#FFB700" }} />Scrooge AI ({sim ? simReturn : "—"})</span>
                 <span><span className="legend-dot" style={{ background: "rgba(255,255,255,0.25)" }} />Benchmark ({benchmarkReturn})</span>
               </div>
               <div className="chart-area"><canvas ref={canvasRef} /></div>
@@ -324,7 +324,7 @@ export default function DashboardPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; }
-        .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -150px; right: -100px; animation: float1 10s ease-in-out infinite; }
+        .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -150px; right: -100px; animation: float1 10s ease-in-out infinite; }
         .orb2 { width: 350px; height: 350px; background: radial-gradient(circle, #34d399, #059669); bottom: -100px; left: -80px; animation: float2 12s ease-in-out infinite; }
         @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,20px)} }
         @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
@@ -332,18 +332,18 @@ export default function DashboardPage() {
         .app { display: flex; flex: 1; position: relative; z-index: 10; min-height: 0; }
         .sidebar { width: 220px; border-right: 0.5px solid rgba(255,255,255,0.05); padding: 20px 12px; display: flex; flex-direction: column; gap: 2px; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); }
         .sidebar-logo { display: flex; align-items: center; gap: 9px; padding: 10px 12px; margin-bottom: 16px; }
-        .sidebar-logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; box-shadow: 0 0 12px rgba(99,102,241,0.3); }
+        .sidebar-logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, #FFB700, #FF8C00); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; box-shadow: 0 0 12px rgba(255,183,0,0.3); }
         .sidebar-logo-name { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; }
-        .sidebar-logo-name span { color: #6366f1; }
+        .sidebar-logo-name span { color: #FFB700; }
         .sidebar-section { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px 4px; margin-top: 8px; }
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; background: transparent; border: none; width: 100%; text-align: left; }
         .nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
-        .nav-item.active { background: rgba(99,102,241,0.1); color: #818cf8; border: 0.5px solid rgba(99,102,241,0.15); }
+        .nav-item.active { background: rgba(255,183,0,0.1); color: #FFD166; border: 0.5px solid rgba(255,183,0,0.15); }
         .nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding-top: 16px; border-top: 0.5px solid rgba(255,255,255,0.05); }
         .user-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px; cursor: pointer; }
         .user-row:hover { background: rgba(255,255,255,0.04); }
-        .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #FFB700, #FF8C00); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
         .user-name { font-size: 13px; font-weight: 500; }
         .user-plan { font-size: 10px; color: rgba(255,255,255,0.3); }
         .main { flex: 1; padding: 24px 28px; overflow: auto; }
@@ -353,8 +353,8 @@ export default function DashboardPage() {
         .top-actions { display: flex; gap: 10px; flex-shrink: 0; }
         .btn-sm { padding: 9px 20px; border-radius: 9px; font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
         .btn-outline { background: transparent; border: 0.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; box-shadow: 0 0 20px rgba(99,102,241,0.3); }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(99,102,241,0.5); }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; box-shadow: 0 0 20px rgba(255,183,0,0.3); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(255,183,0,0.5); }
         .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
         .metric { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px 18px; transition: all 0.2s; }
         .metric:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); }
@@ -362,10 +362,10 @@ export default function DashboardPage() {
         .metric-value { font-size: 24px; font-weight: 700; letter-spacing: -1px; margin-bottom: 4px; }
         .metric-sub { font-size: 11px; color: rgba(255,255,255,0.25); }
         .metric-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-top: 6px; }
-        .green { color: #34d399; } .blue { color: #818cf8; } .amber { color: #fbbf24; } .red { color: #f87171; } .muted { color: rgba(255,255,255,0.2); }
+        .green { color: #34d399; } .blue { color: #FFD166; } .amber { color: #fbbf24; } .red { color: #f87171; } .muted { color: rgba(255,255,255,0.2); }
         .badge-green { background: rgba(52,211,153,0.1); color: #34d399; }
         .badge-red { background: rgba(248,113,113,0.1); color: #f87171; }
-        .badge-blue { background: rgba(129,140,248,0.1); color: #818cf8; }
+        .badge-blue { background: rgba(255,183,0,0.1); color: #FFD166; }
         .mid-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .card { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 18px; }
         .card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; letter-spacing: -0.2px; }
@@ -382,16 +382,16 @@ export default function DashboardPage() {
         .conf-ring { position: relative; width: 88px; height: 88px; margin: 0 auto 14px; }
         .conf-ring svg { transform: rotate(-90deg); }
         .conf-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
-        .conf-val { font-size: 20px; font-weight: 700; color: #818cf8; letter-spacing: -1px; }
+        .conf-val { font-size: 20px; font-weight: 700; color: #FFD166; letter-spacing: -1px; }
         .conf-lbl { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.05em; }
         .conf-bar-row { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-bottom: 7px; }
         .conf-bar-row span:first-child { width: 64px; color: rgba(255,255,255,0.35); }
         .bar-bg { flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; }
-        .bar-fill { height: 4px; border-radius: 2px; background: #818cf8; }
+        .bar-fill { height: 4px; border-radius: 2px; background: #FFD166; }
         .goal-amount { font-size: 26px; font-weight: 700; letter-spacing: -1px; color: #34d399; }
         .goal-target { font-size: 12px; color: rgba(255,255,255,0.3); margin: 3px 0 14px; }
         .goal-bar-bg { background: rgba(255,255,255,0.05); border-radius: 6px; height: 8px; margin-bottom: 8px; overflow: hidden; }
-        .goal-bar { height: 8px; border-radius: 6px; background: linear-gradient(90deg, #6366f1, #34d399); position: relative; transition: width 0.6s ease; }
+        .goal-bar { height: 8px; border-radius: 6px; background: linear-gradient(90deg, #FFB700, #34d399); position: relative; transition: width 0.6s ease; }
         .goal-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.15), transparent); border-radius: 6px; }
         .goal-pct { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.3); }
         .goal-stats { margin-top: 14px; }
@@ -409,8 +409,8 @@ export default function DashboardPage() {
         .alloc-pct { font-size: 13px; font-weight: 600; width: 36px; text-align: right; }
         .alloc-bar-bg { width: 80px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; }
         .alloc-bar { height: 4px; border-radius: 2px; }
-        .run-btn { width: 100%; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 0 20px rgba(99,102,241,0.25); transition: all 0.2s; }
-        .run-btn:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(99,102,241,0.45); }
+        .run-btn { width: 100%; background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 0 20px rgba(255,183,0,0.25); transition: all 0.2s; }
+        .run-btn:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(255,183,0,0.45); }
 
         @media (max-width: 1200px) {
           .metrics { grid-template-columns: repeat(2, 1fr); }

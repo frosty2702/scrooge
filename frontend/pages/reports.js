@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Sidebar from "../components/Sidebar";
 import { fetchLatestSimulation, fetchComparison, getToken, getUser } from "../lib/api";
 
-const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
+const ASSET_COLORS = ["#FFB700", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function ReportsPage() {
   const router = useRouter();
@@ -199,7 +199,7 @@ export default function ReportsPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; }
-        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -100px; right: 0; }
+        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -100px; right: 0; }
         .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 0; left: 0; }
         .disclaimer { background: rgba(251,191,36,0.07); border-bottom: 0.5px solid rgba(251,191,36,0.12); padding: 9px 24px; font-size: 12px; color: rgba(251,191,36,0.7); position: relative; z-index: 10; }
         .app { display: flex; position: relative; z-index: 10; min-height: calc(100vh - 37px); }
@@ -207,9 +207,9 @@ export default function ReportsPage() {
         .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
         .page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 4px; }
         .page-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 11px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 11px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
         .loading { display: flex; justify-content: center; padding: 80px; }
-        .spinner { width: 40px; height: 40px; border: 2px solid rgba(99,102,241,0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spinner { width: 40px; height: 40px; border: 2px solid rgba(255,183,0,0.2); border-top-color: #FFB700; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty { text-align: center; padding: 80px 24px; }
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
@@ -219,9 +219,9 @@ export default function ReportsPage() {
         .report { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; max-width: 860px; }
         .report-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 0.5px solid rgba(255,255,255,0.08); }
         .report-logo { display: flex; align-items: center; gap: 8px; }
-        .report-logo-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; }
+        .report-logo-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #FFB700, #FF8C00); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; }
         .report-logo-name { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-        .report-logo-name span { color: #6366f1; }
+        .report-logo-name span { color: #FFB700; }
         .report-title { font-size: 16px; font-weight: 600; margin-bottom: 3px; }
         .report-sub { font-size: 12px; color: rgba(255,255,255,0.35); }
         .section { margin-bottom: 28px; }
@@ -232,20 +232,20 @@ export default function ReportsPage() {
         .ov-val { font-size: 13px; font-weight: 500; }
         .perf-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px; }
         .perf-card { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 14px; }
-        .highlight-card { border-color: rgba(99,102,241,0.2); background: rgba(99,102,241,0.05); }
+        .highlight-card { border-color: rgba(255,183,0,0.2); background: rgba(255,183,0,0.05); }
         .perf-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
         .perf-val { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
         .perf-val.large { font-size: 24px; letter-spacing: -1px; }
         .perf-sub { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 4px; }
-        .green { color: #34d399; } .blue { color: #818cf8; } .amber { color: #fbbf24; } .red { color: #f87171; }
+        .green { color: #34d399; } .blue { color: #FFD166; } .amber { color: #fbbf24; } .red { color: #f87171; }
         .alloc-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .alloc-name { display: flex; align-items: center; gap: 8px; font-size: 13px; }
         .alloc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
         .alloc-right { display: flex; align-items: center; gap: 10px; }
         .alloc-bar-bg { width: 160px; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; }
         .alloc-bar { height: 5px; border-radius: 3px; }
-        .xai-summary { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 14px; background: rgba(99,102,241,0.05); padding: 12px; border-radius: 8px; }
-        .xai-summary strong { color: #a5b4fc; }
+        .xai-summary { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 14px; background: rgba(255,183,0,0.05); padding: 12px; border-radius: 8px; }
+        .xai-summary strong { color: #FFD166; }
         .imp-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; }
         .imp-label { width: 80px; color: rgba(255,255,255,0.45); }
         .imp-bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; }
@@ -255,8 +255,8 @@ export default function ReportsPage() {
         .comp-table th { text-align: left; padding: 8px 12px; font-size: 10px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
         .comp-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
         .comp-table tr:last-child td { border-bottom: none; }
-        .highlight-row td { background: rgba(99,102,241,0.05); }
-        .ai-badge { background: rgba(99,102,241,0.15); color: #818cf8; font-size: 9px; padding: 2px 7px; border-radius: 6px; margin-left: 6px; }
+        .highlight-row td { background: rgba(255,183,0,0.05); }
+        .ai-badge { background: rgba(255,183,0,0.15); color: #FFD166; font-size: 9px; padding: 2px 7px; border-radius: 6px; margin-left: 6px; }
         .report-footer { margin-top: 28px; padding-top: 16px; border-top: 0.5px solid rgba(255,255,255,0.05); font-size: 11px; color: rgba(255,255,255,0.2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         @media print {
           .no-print { display: none !important; }
@@ -265,7 +265,7 @@ export default function ReportsPage() {
           .report { border: 1px solid #ddd; background: #fff; }
           .section-title { color: #666; border-bottom-color: #ddd; }
           .perf-card, .overview-item { background: #f9f9f9; border-color: #ddd; }
-          .green { color: #16a34a; } .blue { color: #4f46e5; } .amber { color: #d97706; } .red { color: #dc2626; }
+          .green { color: #16a34a; } .blue { color: #FF8C00; } .amber { color: #d97706; } .red { color: #dc2626; }
           .alloc-bar-bg, .imp-bar-bg { background: #eee; }
           .report-footer { color: #999; }
         }

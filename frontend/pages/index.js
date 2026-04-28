@@ -67,8 +67,8 @@ export default function Home() {
           datasets: [
             {
               data: scrooge,
-              borderColor: "#6366f1",
-              backgroundColor: "rgba(99,102,241,0.08)",
+              borderColor: "#FFB700",
+              backgroundColor: "rgba(255,183,0,0.08)",
               borderWidth: 1.5,
               pointRadius: 0,
               fill: true,
@@ -179,7 +179,7 @@ export default function Home() {
               <div className="metrics-row">
                 <div className="mini-card"><div className="mc-label">Portfolio Value</div><div className="mc-val" style={{ color: "#34d399" }}>₹11,106</div><div className="mc-sub">+₹1,106 since start</div></div>
                 <div className="mini-card"><div className="mc-label">Annual Return</div><div className="mc-val" style={{ color: "#34d399" }}>+11.06%</div><div className="mc-sub">vs 10% Nifty avg</div></div>
-                <div className="mini-card"><div className="mc-label">Sharpe Ratio</div><div className="mc-val" style={{ color: "#818cf8" }}>1.39</div><div className="mc-sub">Risk-adjusted</div></div>
+                <div className="mini-card"><div className="mc-label">Sharpe Ratio</div><div className="mc-val" style={{ color: "#FFD166" }}>1.39</div><div className="mc-sub">Risk-adjusted</div></div>
                 <div className="mini-card"><div className="mc-label">Max Drawdown</div><div className="mc-val" style={{ color: "#fbbf24" }}>-6.03%</div><div className="mc-sub">Worst loss period</div></div>
               </div>
               <div className="charts-row">
@@ -189,7 +189,7 @@ export default function Home() {
                 </div>
                 <div className="alloc-card">
                   <div className="alloc-title">Asset Allocation</div>
-                  <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#6366f1" }} />Bond</div><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "43%", background: "#6366f1" }} /></div><span style={{ fontSize: "10px", color: "#818cf8" }}>43%</span></div>
+                  <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#FFB700" }} />Bond</div><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "43%", background: "#FFB700" }} /></div><span style={{ fontSize: "10px", color: "#FFD166" }}>43%</span></div>
                   <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#34d399" }} />Equity</div><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "34%", background: "#34d399" }} /></div><span style={{ fontSize: "10px", color: "#34d399" }}>34%</span></div>
                   <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "#fbbf24" }} />Defensive</div><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "23%", background: "#fbbf24" }} /></div><span style={{ fontSize: "10px", color: "#fbbf24" }}>23%</span></div>
                   <div className="alloc-item"><div className="alloc-left"><div className="alloc-dot" style={{ background: "rgba(255,255,255,0.2)" }} />Commodity</div><div className="alloc-bar-bg"><div className="alloc-bar" style={{ width: "0%", background: "rgba(255,255,255,0.2)" }} /></div><span style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)" }}>0%</span></div>
@@ -209,7 +209,7 @@ export default function Home() {
         <p className="features-sub">Everything you&apos;d expect from an institutional hedge fund — in a student simulation.</p>
         <div className="features-grid">
           {[
-            ["🤖", "Custom Dirichlet Policy", "Novel PPO policy that ensures valid portfolio weights by construction — a theoretical improvement over standard Gaussian policies used in existing literature.", "rgba(99,102,241,0.1)"],
+            ["🤖", "Custom Dirichlet Policy", "Novel PPO policy that ensures valid portfolio weights by construction — a theoretical improvement over standard Gaussian policies used in existing literature.", "rgba(255,183,0,0.1)"],
             ["🔍", "Perturbation-based XAI", "Every decision explained in plain English. We measure how much the agent's allocation changes when each market signal is removed — real interpretability, not proxy math.", "rgba(52,211,153,0.1)"],
             ["📊", "17 Years of Training", "Trained on NIFTY 50 data from 2007–2025, including the 2008 financial crisis. The agent learned to survive and thrive across every market regime.", "rgba(251,191,36,0.1)"],
             ["🏦", "4 Asset Classes", "Equity, bonds, commodities, and defensive assets — each with realistic risk/return profiles and low correlations, enabling genuine portfolio diversification.", "rgba(139,92,246,0.1)"],
@@ -233,37 +233,37 @@ export default function Home() {
       <style jsx>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, sans-serif; color: #fff; overflow-x: hidden; }
-        .grid-bg { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 30%, transparent 100%); pointer-events: none; }
+        .grid-bg { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,183,0,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,183,0,0.07) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 30%, transparent 100%); pointer-events: none; }
         .orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.35; pointer-events: none; }
-        .orb1 { width: 600px; height: 600px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -200px; left: -150px; animation: float1 8s ease-in-out infinite; }
-        .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #8b5cf6, #6d28d9); top: 200px; right: -100px; animation: float2 10s ease-in-out infinite; }
+        .orb1 { width: 600px; height: 600px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -200px; left: -150px; animation: float1 8s ease-in-out infinite; }
+        .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #FF8C00, #FF8C00); top: 200px; right: -100px; animation: float2 10s ease-in-out infinite; }
         .orb3 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 100px; left: 25%; animation: float3 7s ease-in-out infinite; }
         @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-30px) scale(1.05)} }
         @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-20px,20px) scale(1.08)} }
         @keyframes float3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(15px,-25px) scale(1.03)} }
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: rgba(0,0,0,0.4); backdrop-filter: blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.06); }
         .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-mark { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; box-shadow: 0 0 20px rgba(99,102,241,0.5); }
-        .logo-name { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: #fff; } .logo-name span { color: #6366f1; }
+        .logo-mark { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; box-shadow: 0 0 20px rgba(255,183,0,0.5); }
+        .logo-name { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: #fff; } .logo-name span { color: #FFB700; }
         .nav-center { display: flex; gap: 4px; } .nav-link { padding: 7px 16px; border-radius: 8px; font-size: 13px; color: rgba(255,255,255,0.5); cursor: pointer; background: transparent; border: none; transition: all 0.2s; } .nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
         .nav-right { display: flex; gap: 10px; align-items: center; } .nav-btn { padding: 8px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.7); transition: all 0.2s; } .nav-btn:hover { background: rgba(255,255,255,0.08); }
-        .nav-btn-primary { background: #6366f1; border-color: #6366f1; color: #fff; box-shadow: 0 0 20px rgba(99,102,241,0.4); } .nav-btn-primary:hover { background: #4f46e5; box-shadow: 0 0 30px rgba(99,102,241,0.6); }
+        .nav-btn-primary { background: #FFB700; border-color: #FFB700; color: #fff; box-shadow: 0 0 20px rgba(255,183,0,0.4); } .nav-btn-primary:hover { background: #FF8C00; box-shadow: 0 0 30px rgba(255,183,0,0.6); }
         .hero { position: relative; z-index: 10; text-align: center; padding: 160px 48px 80px; }
-        .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(99,102,241,0.08); border: 0.5px solid rgba(99,102,241,0.25); border-radius: 20px; padding: 7px 18px; font-size: 12px; color: #a5b4fc; margin-bottom: 28px; animation: fadeUp 0.8s ease both; }
-        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #6366f1; animation: pulse 2s infinite; } @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.8)} }
-        .hero-title { font-size: 72px; font-weight: 800; letter-spacing: -3px; line-height: 1.05; margin-bottom: 24px; animation: fadeUp 0.8s 0.1s ease both; } .hero-title .plain { display: block; color: #fff; } .hero-title .gradient { display: block; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 40%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,183,0,0.08); border: 0.5px solid rgba(255,183,0,0.25); border-radius: 20px; padding: 7px 18px; font-size: 12px; color: #FFD166; margin-bottom: 28px; animation: fadeUp 0.8s ease both; }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #FFB700; animation: pulse 2s infinite; } @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.8)} }
+        .hero-title { font-size: 72px; font-weight: 800; letter-spacing: -3px; line-height: 1.05; margin-bottom: 24px; animation: fadeUp 0.8s 0.1s ease both; } .hero-title .plain { display: block; color: #fff; } .hero-title .gradient { display: block; background: linear-gradient(135deg, #FFB700 0%, #FF8C00 40%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .hero-sub { font-size: 18px; color: rgba(255,255,255,0.4); max-width: 560px; margin: 0 auto 44px; line-height: 1.7; animation: fadeUp 0.8s 0.2s ease both; }
         .cta-row { display: flex; gap: 14px; justify-content: center; margin-bottom: 72px; animation: fadeUp 0.8s 0.3s ease both; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 16px 36px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 0 40px rgba(99,102,241,0.45); transition: all 0.3s; position: relative; overflow: hidden; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 16px 36px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 0 40px rgba(255,183,0,0.45); transition: all 0.3s; position: relative; overflow: hidden; }
         .btn-primary::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 60px rgba(99,102,241,0.65); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 60px rgba(255,183,0,0.65); }
         .btn-secondary { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); padding: 16px 36px; border-radius: 14px; font-size: 15px; font-weight: 500; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s; }
         .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
         .stats { display: flex; justify-content: center; gap: 64px; margin-bottom: 80px; animation: fadeUp 0.8s 0.4s ease both; }
         .stat { text-align: center; } .stat-num { font-size: 40px; font-weight: 800; letter-spacing: -2px; background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .stat-label { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; } .stat-divider { width: 0.5px; background: rgba(255,255,255,0.08); align-self: stretch; margin: 4px 0; }
         .dashboard-preview { position: relative; z-index: 10; max-width: 1000px; margin: 0 auto; padding: 0 48px 80px; animation: fadeUp 0.8s 0.5s ease both; }
-        .preview-glow { position: absolute; inset: -2px; border-radius: 22px; background: linear-gradient(135deg, rgba(99,102,241,0.4), transparent 40%, rgba(139,92,246,0.3)); z-index: -1; filter: blur(1px); }
+        .preview-glow { position: absolute; inset: -2px; border-radius: 22px; background: linear-gradient(135deg, rgba(255,183,0,0.4), transparent 40%, rgba(139,92,246,0.3)); z-index: -1; filter: blur(1px); }
         .preview-frame { background: rgba(10,10,20,0.9); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; backdrop-filter: blur(20px); box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.05); }
         .preview-bar { background: rgba(255,255,255,0.02); padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid rgba(255,255,255,0.05); }
         .dot { width: 10px; height: 10px; border-radius: 50%; } .dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
@@ -275,13 +275,13 @@ export default function Home() {
         .dash-logo-name { font-size: 13px; font-weight: 700; letter-spacing: -0.3px; }
         .dash-nav { display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:11px;color:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.2s; background: transparent; border: none; width: 100%; text-align: left; }
         .dash-nav:hover { background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6); }
-        .dash-nav.active { background:rgba(99,102,241,0.1);color:#818cf8; }
+        .dash-nav.active { background:rgba(255,183,0,0.1);color:#FFD166; }
         .dash-nav-icon { font-size:12px;width:16px; }
         .dash-main { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
         .dash-header { display:flex;justify-content:space-between;align-items:center; }
         .dash-greeting { font-size:14px;font-weight:600;letter-spacing:-0.3px; }
         .dash-sub { font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px; }
-        .dash-simulate-btn { background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;color:#fff;padding:7px 16px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;box-shadow:0 0 15px rgba(99,102,241,0.3); }
+        .dash-simulate-btn { background:linear-gradient(135deg,#FFB700,#FF8C00);border:none;color:#fff;padding:7px 16px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;box-shadow:0 0 15px rgba(255,183,0,0.3); }
         .metrics-row { display:grid;grid-template-columns:repeat(4,1fr);gap:8px; }
         .mini-card { background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 12px; }
         .mc-label { font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px; }
@@ -291,15 +291,15 @@ export default function Home() {
         .alloc-card { background:rgba(255,255,255,0.02);border:0.5px solid rgba(255,255,255,0.05);border-radius:10px;padding:12px; } .alloc-title { font-size:10px;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:10px; }
         .alloc-item { display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:10px; } .alloc-left { display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.5); }
         .alloc-dot { width:6px;height:6px;border-radius:50%; } .alloc-bar-bg { width:60px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px; } .alloc-bar { height:3px;border-radius:2px; }
-        .xai-strip { background:rgba(99,102,241,0.05);border:0.5px solid rgba(99,102,241,0.12);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px; }
-        .xai-icon { width:28px;height:28px;background:rgba(99,102,241,0.15);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0; }
-        .xai-text { font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5; } .xai-text strong { color:#a5b4fc; }
+        .xai-strip { background:rgba(255,183,0,0.05);border:0.5px solid rgba(255,183,0,0.12);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px; }
+        .xai-icon { width:28px;height:28px;background:rgba(255,183,0,0.15);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0; }
+        .xai-text { font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5; } .xai-text strong { color:#FFD166; }
         .features { position:relative;z-index:10;padding:0 48px 80px;max-width:1000px;margin:0 auto; }
         .features-title { text-align:center;font-size:36px;font-weight:800;letter-spacing:-1.5px;margin-bottom:8px; }
         .features-sub { text-align:center;font-size:15px;color:rgba(255,255,255,0.4);margin-bottom:48px; }
         .features-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
         .feature-card { background:rgba(255,255,255,0.02);border:0.5px solid rgba(255,255,255,0.07); border-radius:16px;padding:24px; transition:all 0.3s;cursor:default; }
-        .feature-card:hover { background:rgba(255,255,255,0.04);border-color:rgba(99,102,241,0.3);transform:translateY(-4px); }
+        .feature-card:hover { background:rgba(255,255,255,0.04);border-color:rgba(255,183,0,0.3);transform:translateY(-4px); }
         .feature-icon { width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px; }
         .feature-title { font-size:14px;font-weight:600;margin-bottom:6px;letter-spacing:-0.3px; }
         .feature-desc { font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6; }

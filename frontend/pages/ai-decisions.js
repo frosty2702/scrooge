@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 import { fetchLatestSimulation, getToken } from "../lib/api";
 import { explainInPlainEnglish } from "../lib/explain";
 
-const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
+const ASSET_COLORS = ["#FFB700", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function AIDecisionsPage() {
   const router = useRouter();
@@ -253,7 +253,7 @@ export default function AIDecisionsPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; z-index: 0; }
-        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -100px; left: -100px; }
+        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -100px; left: -100px; }
         .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 0; right: 0; }
         .disclaimer { background: rgba(251,191,36,0.07); border-bottom: 0.5px solid rgba(251,191,36,0.12); padding: 9px 24px; font-size: 12px; color: rgba(251,191,36,0.7); position: relative; z-index: 10; }
         .app { display: flex; position: relative; z-index: 10; min-height: calc(100vh - 37px); }
@@ -261,12 +261,12 @@ export default function AIDecisionsPage() {
         /* Sidebar */
         .sidebar { width: 220px; border-right: 0.5px solid rgba(255,255,255,0.05); padding: 20px 12px; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); flex-shrink: 0; }
         .sidebar-logo { display: flex; align-items: center; gap: 9px; padding: 10px 12px; margin-bottom: 16px; cursor: pointer; border: none; background: transparent; color: #fff; width: 100%; text-align: left; }
-        .sidebar-logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+        .sidebar-logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, #FFB700, #FF8C00); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
         .sidebar-logo-name { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; }
-        .sidebar-logo-name span { color: #6366f1; }
+        .sidebar-logo-name span { color: #FFB700; }
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; margin-bottom: 2px; border: none; background: transparent; width: 100%; text-align: left; }
         .nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
-        .nav-item.active { background: rgba(99,102,241,0.1); color: #818cf8; border: 0.5px solid rgba(99,102,241,0.15); }
+        .nav-item.active { background: rgba(255,183,0,0.1); color: #FFD166; border: 0.5px solid rgba(255,183,0,0.15); }
 
         /* Main */
         .main { flex: 1; padding: 28px 32px; overflow: auto; }
@@ -278,7 +278,7 @@ export default function AIDecisionsPage() {
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
         .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
         .empty-sub { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
         /* Summary row */
         .explain-banner { background: rgba(52,211,153,0.06); border: 0.5px solid rgba(52,211,153,0.2); border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 14px; align-items: flex-start; }
@@ -311,7 +311,7 @@ export default function AIDecisionsPage() {
         .capital-cell { color: #fff; font-weight: 600; white-space: nowrap; }
         .weight-cell { display: flex; align-items: center; gap: 6px; }
         .weight-bar { height: 4px; border-radius: 2px; min-width: 2px; max-width: 60px; flex-shrink: 0; }
-        .driver-badge { background: rgba(99,102,241,0.12); color: #a5b4fc; font-size: 11px; padding: 3px 9px; border-radius: 6px; white-space: nowrap; }
+        .driver-badge { background: rgba(255,183,0,0.12); color: #FFD166; font-size: 11px; padding: 3px 9px; border-radius: 6px; white-space: nowrap; }
 
         @media (max-width: 1100px) { .summary-row { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) {

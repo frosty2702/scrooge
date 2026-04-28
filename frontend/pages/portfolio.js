@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Sidebar from "../components/Sidebar";
 import { fetchLatestSimulation, fetchMySimulations, getToken } from "../lib/api";
 
-const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
+const ASSET_COLORS = ["#FFB700", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function PortfolioPage() {
   const router = useRouter();
@@ -36,8 +36,8 @@ export default function PortfolioPage() {
           labels: sim.decisions.map((d) => d.date.slice(0, 10)),
           datasets: [{
             data: sim.decisions.map((d) => d.capital),
-            borderColor: "#6366f1",
-            backgroundColor: "rgba(99,102,241,0.07)",
+            borderColor: "#FFB700",
+            backgroundColor: "rgba(255,183,0,0.07)",
             borderWidth: 2,
             pointRadius: 0,
             fill: true,
@@ -146,7 +146,7 @@ export default function PortfolioPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; }
-        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -100px; right: 0; }
+        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -100px; right: 0; }
         .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 0; left: 0; }
         .disclaimer { background: rgba(251,191,36,0.07); border-bottom: 0.5px solid rgba(251,191,36,0.12); padding: 9px 24px; font-size: 12px; color: rgba(251,191,36,0.7); position: relative; z-index: 10; }
         .app { display: flex; position: relative; z-index: 10; min-height: calc(100vh - 37px); }
@@ -154,19 +154,19 @@ export default function PortfolioPage() {
         .page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 4px; }
         .page-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
         .loading { display: flex; justify-content: center; padding: 80px; }
-        .spinner { width: 40px; height: 40px; border: 2px solid rgba(99,102,241,0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spinner { width: 40px; height: 40px; border: 2px solid rgba(255,183,0,0.2); border-top-color: #FFB700; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty { text-align: center; padding: 80px 24px; }
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
         .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
         .empty-sub { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
         .metric { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px 18px; }
         .metric-label { font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
         .metric-value { font-size: 24px; font-weight: 700; letter-spacing: -1px; margin-bottom: 4px; }
         .metric-sub { font-size: 11px; color: rgba(255,255,255,0.25); }
-        .green { color: #34d399; } .blue { color: #818cf8; } .amber { color: #fbbf24; } .red { color: #f87171; }
+        .green { color: #34d399; } .blue { color: #FFD166; } .amber { color: #fbbf24; } .red { color: #f87171; }
         .row-2col { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 16px; }
         .card { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 18px; }
         .card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }

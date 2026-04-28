@@ -128,7 +128,7 @@ export default function LoginPage() {
           </div>
           <div className="stat-list">
             <div className="stat-item">
-              <div className="stat-icon" style={{ background: "rgba(99,102,241,0.1)" }}>
+              <div className="stat-icon" style={{ background: "rgba(255,183,0,0.1)" }}>
                 🤖
               </div>
               <div className="stat-text">
@@ -353,7 +353,7 @@ export default function LoginPage() {
         .orb1 {
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, #6366f1, #4f46e5);
+          background: radial-gradient(circle, #FFB700, #FF8C00);
           top: -150px;
           right: -100px;
           animation: float1 8s ease-in-out infinite;
@@ -409,7 +409,7 @@ export default function LoginPage() {
           font-weight: 700;
           letter-spacing: -0.5px;
         }
-        .logo-name span { color: #6366f1; }
+        .logo-name span { color: #FFB700; }
         .back-btn {
           background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(255, 255, 255, 0.12);
@@ -443,7 +443,7 @@ export default function LoginPage() {
           margin-bottom: 16px;
         }
         .left-title .grad {
-          background: linear-gradient(135deg, #6366f1, #8b5cf6, #34d399);
+          background: linear-gradient(135deg, #FFB700, #FF8C00, #34d399);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -500,7 +500,7 @@ export default function LoginPage() {
           transition: all 0.2s;
         }
         .tab.active {
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          background: linear-gradient(135deg, #FFB700, #FF8C00);
           color: #fff;
           box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
@@ -534,13 +534,13 @@ export default function LoginPage() {
           transition: border-color 0.2s;
         }
         .field input:focus {
-          border-color: #6366f1;
+          border-color: #FFB700;
           box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
         .field input::placeholder { color: rgba(255, 255, 255, 0.2); }
         .submit-btn {
           width: 100%;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          background: linear-gradient(135deg, #FFB700, #FF8C00);
           border: none;
           color: #fff;
           padding: 14px;
@@ -594,14 +594,14 @@ export default function LoginPage() {
         .disclaimer span { color: rgba(255, 255, 255, 0.35); }
         .forgot-link { text-align: right; margin-top: -10px; margin-bottom: 16px; }
         .forgot-link button { background: none; border: none; color: rgba(255,255,255,0.35); font-size: 12px; cursor: pointer; }
-        .forgot-link button:hover { color: #818cf8; }
+        .forgot-link button:hover { color: #FFD166; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
         .modal { background: #0f0f0f; border: 0.5px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 28px; width: 100%; max-width: 400px; }
         .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
         .modal-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 20px; line-height: 1.6; }
         .modal-error { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); color: #f87171; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
         .modal-success { color: #34d399; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        .reset-token-box { background: rgba(99,102,241,0.08); border: 0.5px solid rgba(99,102,241,0.25); border-radius: 10px; padding: 12px 16px; font-family: monospace; font-size: 12px; color: #a5b4fc; word-break: break-all; margin-bottom: 16px; }
+        .reset-token-box { background: rgba(255,183,0,0.08); border: 0.5px solid rgba(255,183,0,0.25); border-radius: 10px; padding: 12px 16px; font-family: monospace; font-size: 12px; color: #FFD166; word-break: break-all; margin-bottom: 16px; }
         .modal-close { width: 100%; background: transparent; border: 0.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); padding: 10px; border-radius: 10px; font-size: 13px; cursor: pointer; margin-top: 10px; }
 
         @media (max-width: 1120px) {

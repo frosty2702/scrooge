@@ -140,7 +140,7 @@ export default function ResetPasswordPage() {
         .orb1 {
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, #6366f1, #4f46e5);
+          background: radial-gradient(circle, #FFB700, #FF8C00);
           top: -150px;
           right: -100px;
           animation: float1 8s ease-in-out infinite;
@@ -187,7 +187,7 @@ export default function ResetPasswordPage() {
         .logo-mark {
           width: 34px;
           height: 34px;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          background: linear-gradient(135deg, #FFB700, #FF8C00);
           border-radius: 9px;
           display: flex;
           align-items: center;
@@ -201,7 +201,7 @@ export default function ResetPasswordPage() {
           font-weight: 700;
           letter-spacing: -0.5px;
         }
-        .logo-name span { color: #6366f1; }
+        .logo-name span { color: #FFB700; }
         .back-btn {
           background: rgba(255, 255, 255, 0.05);
           border: 0.5px solid rgba(255, 255, 255, 0.12);
@@ -288,7 +288,7 @@ export default function ResetPasswordPage() {
           transition: border-color 0.2s;
         }
         .field input:focus {
-          border-color: #6366f1;
+          border-color: #FFB700;
           box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
         .field input::placeholder {
@@ -296,7 +296,7 @@ export default function ResetPasswordPage() {
         }
         .submit-btn {
           width: 100%;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          background: linear-gradient(135deg, #FFB700, #FF8C00);
           border: none;
           color: #fff;
           padding: 14px;

@@ -20,7 +20,7 @@ export default function HistoryPage() {
 
   const fmt = (n) => `₹${Number(Number(n).toFixed(0)).toLocaleString("en-IN")}`;
   const fmtDate = (iso) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-  const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
+  const ASSET_COLORS = ["#FFB700", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
   return (
     <div className="page">
@@ -124,7 +124,7 @@ export default function HistoryPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; }
-        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -100px; right: 0; }
+        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -100px; right: 0; }
         .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 0; left: 0; }
         .disclaimer { background: rgba(251,191,36,0.07); border-bottom: 0.5px solid rgba(251,191,36,0.12); padding: 9px 24px; font-size: 12px; color: rgba(251,191,36,0.7); position: relative; z-index: 10; }
         .app { display: flex; position: relative; z-index: 10; min-height: calc(100vh - 37px); }
@@ -135,9 +135,9 @@ export default function HistoryPage() {
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
         .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
         .empty-sub { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
-        .spinner { width: 40px; height: 40px; border: 2px solid rgba(99,102,241,0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        .spinner { width: 40px; height: 40px; border: 2px solid rgba(255,183,0,0.2); border-top-color: #FFB700; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .sim-list { display: flex; flex-direction: column; gap: 10px; }
         .sim-card { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
         .sim-card:hover { border-color: rgba(255,255,255,0.1); }
@@ -150,7 +150,7 @@ export default function HistoryPage() {
         .sim-metric { text-align: right; }
         .metric-label { font-size: 10px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
         .metric-val { font-size: 14px; font-weight: 600; }
-        .green { color: #34d399; } .blue { color: #818cf8; } .amber { color: #fbbf24; } .red { color: #f87171; }
+        .green { color: #34d399; } .blue { color: #FFD166; } .amber { color: #fbbf24; } .red { color: #f87171; }
         .chevron { font-size: 10px; color: rgba(255,255,255,0.2); margin-left: 8px; }
         .sim-detail { padding: 0 20px 20px; border-top: 0.5px solid rgba(255,255,255,0.05); padding-top: 16px; }
         .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px; }
@@ -167,7 +167,7 @@ export default function HistoryPage() {
         .stat-row span:first-child { color: rgba(255,255,255,0.35); }
         .detail-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
         .btn-sm { background: transparent; border: 0.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); padding: 9px 18px; border-radius: 9px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-        .btn-sm:hover { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.3); color: #818cf8; }
+        .btn-sm:hover { background: rgba(255,183,0,0.08); border-color: rgba(255,183,0,0.3); color: #FFD166; }
         @media (max-width: 768px) {
           .sim-header { flex-direction: column; align-items: flex-start; gap: 12px; }
           .sim-metrics { gap: 14px; width: 100%; }

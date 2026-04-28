@@ -108,18 +108,18 @@ export default function Sidebar({ active }) {
         .sidebar { width: 220px; min-width: 220px; border-right: 0.5px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); flex-shrink: 0; min-height: 100vh; }
         .sidebar-inner { display: flex; flex-direction: column; gap: 2px; padding: 20px 12px; height: 100%; }
         .logo-row { display: flex; align-items: center; gap: 9px; padding: 10px 12px; margin-bottom: 16px; }
-        .logo-mark { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; box-shadow: 0 0 12px rgba(99,102,241,0.3); }
+        .logo-mark { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; box-shadow: 0 0 12px rgba(255,183,0,0.3); }
         .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; color: #fff; flex: 1; }
-        .logo-name span { color: #6366f1; }
+        .logo-name span { color: #FFB700; }
         .close-btn { display: none; background: transparent; border: none; color: rgba(255,255,255,0.4); font-size: 18px; cursor: pointer; padding: 4px; line-height: 1; margin-left: auto; }
         .section-label { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px 4px; margin-top: 6px; }
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; background: transparent; border: none; width: 100%; text-align: left; margin-bottom: 1px; }
         .nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
-        .nav-item.active { background: rgba(99,102,241,0.1); color: #818cf8; border: 0.5px solid rgba(99,102,241,0.15); }
+        .nav-item.active { background: rgba(255,183,0,0.1); color: #FFD166; border: 0.5px solid rgba(255,183,0,0.15); }
         .icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
         .bottom { margin-top: auto; padding-top: 16px; border-top: 0.5px solid rgba(255,255,255,0.05); }
         .user-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin-bottom: 6px; }
-        .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; color: #fff; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #FFB700, #FF8C00); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; color: #fff; }
         .user-info { overflow: hidden; }
         .user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-sub { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: capitalize; }
@@ -133,8 +133,8 @@ export default function Sidebar({ active }) {
         .mobile-logo { display: flex; align-items: center; gap: 8px; }
         .logo-mark-sm { width: 26px; height: 26px; border-radius: 7px; object-fit: cover; }
         .logo-name-sm { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
-        .logo-name-sm span { color: #6366f1; }
-        .mobile-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; }
+        .logo-name-sm span { color: #FFB700; }
+        .mobile-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #FFB700, #FF8C00); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; }
 
         /* ── Mobile drawer ─────────────────────────────────────────────────── */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 199; backdrop-filter: blur(2px); }

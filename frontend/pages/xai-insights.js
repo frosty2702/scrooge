@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 import { fetchMySimulations, getToken } from "../lib/api";
 import { explainInPlainEnglish } from "../lib/explain";
 
-const ASSET_COLORS = ["#6366f1", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
+const ASSET_COLORS = ["#FFB700", "#34d399", "#fbbf24", "#f87171", "#ec4899"];
 
 export default function XAIInsightsPage() {
   const router = useRouter();
@@ -217,7 +217,7 @@ export default function XAIInsightsPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; }
-        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -100px; right: 0; }
+        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -100px; right: 0; }
         .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 0; left: 0; }
         .disclaimer { background: rgba(251,191,36,0.07); border-bottom: 0.5px solid rgba(251,191,36,0.12); padding: 9px 24px; font-size: 12px; color: rgba(251,191,36,0.7); position: relative; z-index: 10; }
         .app { display: flex; position: relative; z-index: 10; min-height: calc(100vh - 37px); }
@@ -225,19 +225,19 @@ export default function XAIInsightsPage() {
         .page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 4px; }
         .page-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
         .loading { display: flex; justify-content: center; padding: 80px; }
-        .spinner { width: 40px; height: 40px; border: 2px solid rgba(99,102,241,0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spinner { width: 40px; height: 40px; border: 2px solid rgba(255,183,0,0.2); border-top-color: #FFB700; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty { text-align: center; padding: 80px 24px; }
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
         .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
         .empty-sub { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .insight-banner { background: rgba(99,102,241,0.07); border: 0.5px solid rgba(99,102,241,0.2); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .insight-banner { background: rgba(255,183,0,0.07); border: 0.5px solid rgba(255,183,0,0.2); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
         .banner-icon { font-size: 28px; flex-shrink: 0; }
         .banner-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-        .highlight-text { color: #818cf8; }
+        .highlight-text { color: #FFD166; }
         .banner-sub { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
-        .banner-sub strong { color: #a5b4fc; }
+        .banner-sub strong { color: #FFD166; }
         .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .card { background: rgba(255,255,255,0.02); border: 0.5px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
         .card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
@@ -253,11 +253,11 @@ export default function XAIInsightsPage() {
         .driver-table tr:last-child td { border-bottom: none; }
         .muted { color: rgba(255,255,255,0.2); }
         .date-cell { color: rgba(255,255,255,0.4); white-space: nowrap; }
-        .driver-badge { background: rgba(99,102,241,0.12); color: #a5b4fc; padding: 3px 9px; border-radius: 6px; font-size: 11px; white-space: nowrap; }
+        .driver-badge { background: rgba(255,183,0,0.12); color: #FFD166; padding: 3px 9px; border-radius: 6px; font-size: 11px; white-space: nowrap; }
         .green { color: #34d399; } .red { color: #f87171; }
         .trend-card { margin-bottom: 12px; }
         .chart-area { position: relative; height: 200px; }
-        .explanation-text { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 20px; background: rgba(99,102,241,0.05); border: 0.5px solid rgba(99,102,241,0.12); padding: 14px; border-radius: 10px; }
+        .explanation-text { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 20px; background: rgba(255,183,0,0.05); border: 0.5px solid rgba(255,183,0,0.12); padding: 14px; border-radius: 10px; }
         .feature-glossary { display: flex; flex-direction: column; gap: 12px; }
         .glossary-row { display: flex; gap: 12px; align-items: flex-start; }
         .glossary-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }

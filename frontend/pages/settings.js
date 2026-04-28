@@ -121,7 +121,7 @@ export default function SettingsPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .page { background: #000; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; color: #fff; min-height: 100vh; }
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; }
-        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -100px; right: -100px; }
+        .orb1 { width: 450px; height: 450px; background: radial-gradient(circle, #FFB700, #FF8C00); top: -100px; right: -100px; }
         .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, #34d399, #059669); bottom: 0; left: 0; }
         .disclaimer { background: rgba(251,191,36,0.07); border-bottom: 0.5px solid rgba(251,191,36,0.12); padding: 9px 24px; font-size: 12px; color: rgba(251,191,36,0.7); position: relative; z-index: 10; }
         .app { display: flex; position: relative; z-index: 10; min-height: calc(100vh - 37px); }
@@ -135,13 +135,13 @@ export default function SettingsPage() {
         .field label { font-size: 11px; color: rgba(255,255,255,0.35); display: block; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.06em; }
         .field-hint { font-size: 11px; color: rgba(255,255,255,0.2); margin-top: 5px; }
         input { width: 100%; background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 11px; padding: 12px 14px; font-size: 14px; color: #fff; outline: none; transition: border-color 0.2s; }
-        input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+        input:focus { border-color: #FFB700; box-shadow: 0 0 0 3px rgba(255,183,0,0.1); }
         input::placeholder { color: rgba(255,255,255,0.2); }
         .disabled { opacity: 0.4; cursor: not-allowed; }
         .chips { display: flex; gap: 10px; flex-wrap: wrap; }
         .chip { padding: 10px 18px; border-radius: 10px; border: 0.5px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); font-size: 13px; cursor: pointer; transition: all 0.2s; }
-        .chip:hover { border-color: rgba(99,102,241,0.4); color: #fff; }
-        .chip-active { background: rgba(99,102,241,0.12); border-color: #6366f1; color: #fff; }
+        .chip:hover { border-color: rgba(255,183,0,0.4); color: #fff; }
+        .chip-active { background: rgba(255,183,0,0.12); border-color: #FFB700; color: #fff; }
         .info-row { display: flex; justify-content: space-between; font-size: 13px; padding: 10px 0; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
         .info-row:last-child { border-bottom: none; }
         .info-row span:first-child { color: rgba(255,255,255,0.4); }
@@ -150,9 +150,9 @@ export default function SettingsPage() {
         .error-msg { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); color: #f87171; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-top: 16px; max-width: 640px; }
         .success-msg { background: rgba(52,211,153,0.08); border: 0.5px solid rgba(52,211,153,0.2); color: #34d399; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-top: 16px; max-width: 640px; }
         .actions { margin-top: 20px; max-width: 640px; display: flex; justify-content: flex-end; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: #fff; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #FFB700, #FF8C00); border: none; color: #fff; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-primary:not(:disabled):hover { box-shadow: 0 0 30px rgba(99,102,241,0.4); transform: translateY(-1px); }
+        .btn-primary:not(:disabled):hover { box-shadow: 0 0 30px rgba(255,183,0,0.4); transform: translateY(-1px); }
         @media (max-width: 768px) {
           .main { padding: 16px; }
           .sections { max-width: 100%; }

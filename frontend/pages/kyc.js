@@ -220,7 +220,7 @@ export default function KycPage() {
         }
         .progress > div {
           height: 100%;
-          background: linear-gradient(90deg, #6366f1, #34d399);
+          background: linear-gradient(90deg, #FFB700, #34d399);
           border-radius: 999px;
           transition: width 0.4s ease;
         }
@@ -275,7 +275,7 @@ export default function KycPage() {
           width: 100%;
         }
         input:focus {
-          border-color: #6366f1;
+          border-color: #FFB700;
           box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
         input::placeholder { color: rgba(255, 255, 255, 0.2); }
@@ -301,7 +301,7 @@ export default function KycPage() {
         }
         .chip-active {
           background: rgba(99, 102, 241, 0.15);
-          border-color: #6366f1;
+          border-color: #FFB700;
           color: #fff;
           box-shadow: 0 0 16px rgba(99, 102, 241, 0.2);
         }
@@ -328,7 +328,7 @@ export default function KycPage() {
           padding: 11px 24px;
           border-radius: 12px;
           border: none;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          background: linear-gradient(135deg, #FFB700, #FF8C00);
           color: #fff;
           font-size: 14px;
           font-weight: 600;

@@ -1,0 +1,30 @@
+{
+  "period": {
+    "start": "2011-04-20",
+    "end": "2012-07-27",
+    "days": 311
+  },
+  "strategies": [
+    {
+      "name": "Equal Weight",
+      "total_return_pct": 9.56444536127876,
+      "sharpe": 1.1219835191970235,
+      "volatility": 6.80373219453507,
+      "max_drawdown": -5.03525188008993
+    },
+    {
+      "name": "Mean Variance",
+      "total_return_pct": -0.9380779397511807,
+      "sharpe": -0.1871285958930118,
+      "volatility": 4.512731583233137,
+      "max_drawdown": -6.077196151856645
+    },
+    {
+      "name": "PPO Agent",
+      "total_return_pct": 14.124521317409776,
+      "sharpe": 1.430850457800086,
+      "volatility": 7.689951169142846,
+      "max_drawdown": -6.031673869590648
+    }
+  ]
+}

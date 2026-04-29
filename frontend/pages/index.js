@@ -114,9 +114,9 @@ export default function Home() {
           <div className="logo-name">Scrooge<span>.</span>ai</div>
         </div>
         <div className="nav-center">
-          <button className="nav-link" type="button" onClick={() => router.push("/simulate")}>How it works</button>
+          <button className="nav-link" type="button" onClick={() => router.push("/how-it-works")}>How it works</button>
           <button className="nav-link" type="button" onClick={() => router.push("/dashboard")}>Performance</button>
-          <button className="nav-link" type="button" onClick={() => router.push("/ai-decisions")}>XAI</button>
+          <button className="nav-link" type="button" onClick={() => router.push("/xai")}>XAI</button>
         </div>
         <div className="nav-right">
           {isLoggedIn ? (

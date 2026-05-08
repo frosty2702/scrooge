@@ -97,24 +97,6 @@ python src/precompute.py          # precompute baseline comparison cache
 
 ---
 
-## Asset classes
-
-| Asset | Proxy | Characteristics |
-|-------|-------|-----------------|
-| Equity | NIFTY 50 | High return, high volatility |
-| Bond | Synthetic | Low return, low volatility, negative correlation |
-| Commodity | Synthetic | Medium return, medium volatility |
-| Defensive | Synthetic | Very low volatility, stable return |
-
----
-
-## Performance (17-year backtest)
-
-| Strategy | Cumulative Return | Sharpe Ratio | Max Drawdown |
-|----------|-------------------|--------------|--------------|
-| PPO Agent | 280.50% | 1.04 | -18.6% |
-| Equal-Weight | 301.65% | 1.13 | -22.1% |
-| Mean-Variance | 123.27% | 0.61 | -31.4% |
 
 ---
 
